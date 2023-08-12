@@ -1,6 +1,7 @@
 # tiktok_live_client.py
 from TikTokLive import TikTokLiveClient
 from TikTokLive.types.events import CommentEvent, ConnectEvent
+import constants
 
 
 class TikTokLiveManager:
