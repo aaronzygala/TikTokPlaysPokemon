@@ -1,0 +1,8 @@
+# Ignore the virtual environment
+ttp-env/
+
+# Ignore the .idea directory (PyCharm configuration)
+.idea/
+
+# Ignore the tmp.py file
+tmp.py
