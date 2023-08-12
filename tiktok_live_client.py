@@ -4,6 +4,22 @@ from TikTokLive.types.events import CommentEvent, ConnectEvent
 
 
 class TikTokLiveManager:
+    """
+    A class that manages TikTok Live interactions and processes comments for key presses.
+
+    Args:
+        unique_id (str): The unique identifier for the user.
+        key_press_queue (Queue): A queue to send key press commands.
+
+    Attributes:
+        client (TikTokLiveClient): The TikTok Live client instance.
+        key_press_queue (Queue): The queue for sending key press commands.
+
+    Methods:
+        run(): Start the TikTok Live interaction.
+        on_connect(event): Callback for handling connection events.
+        on_comment(event): Callback for handling comment events and sending key press commands.
+    """
     def __init__(self, unique_id, key_press_queue):
         self.client = TikTokLiveClient(unique_id)
         self.key_press_queue = key_press_queue
