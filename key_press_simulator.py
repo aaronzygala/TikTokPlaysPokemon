@@ -66,4 +66,5 @@ class KeyPressSimulator:
     def press_batch(self, commands):
         for command in commands:
             self.emulator_window.activate()  # Activating the window
+            print("Command registered: ", command)
             pydirectinput.press(command, interval=0.2)

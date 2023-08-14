@@ -43,8 +43,8 @@ class TikTokLiveManager:
         print(f"{event.user.nickname}: {event.comment}")
 
         # Parse the comment and check for custom commands
-        commands_triggered = [constants.command_to_key_mapping[command] for command in event.comment.split() if
-                              command in constants.command_to_key_mapping]
+        commands_triggered = [constants.command_to_key_mapping[command.lower()] for command in event.comment.split() if
+                              command.lower() in constants.command_to_key_mapping]
 
         if len(commands_triggered) > 0:
             self.key_press_queue.put(commands_triggered)
