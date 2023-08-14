@@ -6,3 +6,6 @@ ttp-env/
 
 # Ignore the tmp.py file
 tmp.py
+
+# Ignore the .pyc files
+__pycache__/
