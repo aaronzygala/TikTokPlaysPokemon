@@ -21,6 +21,7 @@ class TikTokLiveManager:
         on_connect(event): Callback for handling connection events.
         on_comment(event): Callback for handling comment events and sending key press commands.
     """
+
     def __init__(self, unique_id, key_press_queue):
         self.client = TikTokLiveClient(
             unique_id,
@@ -42,9 +43,6 @@ class TikTokLiveManager:
         print(f"{event.user.nickname}: {event.comment}")
 
         # Parse the comment and check for custom commands
-        commands_triggered = [command for command in constants.command_to_key_mapping if
-                              command in event.comment.lower()]
-
-        for command in commands_triggered:
-            # Add the command to the key press queue for batching
-            self.key_press_queue.put([command])
+        commands_triggered = [constants.command_to_key_mapping[command] for command in event.comment.split() if
+                              command in constants.command_to_key_mapping]
+        self.key_press_queue.put(commands_triggeredq)

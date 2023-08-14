@@ -49,7 +49,6 @@ class KeyPressSimulator:
 
             self.batch_commands.extend(commands_to_press)
             current_time = time.time()
-
             if current_time - self.last_batch_time >= self.batch_interval:
                 if self.batch_commands:
                     self.press_batch(self.batch_commands)
@@ -57,4 +56,5 @@ class KeyPressSimulator:
                     self.last_batch_time = current_time
 
     def press_batch(self, commands):
-        pyautogui.typewrite(''.join(commands), interval=1.0)
+        for command in commands:
+            pyautogui.press(command, interval=0.2)
