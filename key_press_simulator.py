@@ -1,7 +1,8 @@
 # key_press_simulator.py
-import pyautogui
+import pydirectinput
 import threading
 import time
+import pygetwindow as gw
 
 
 class KeyPressSimulator:
@@ -27,7 +28,14 @@ class KeyPressSimulator:
         simulate_key_presses(): Continuously process commands and simulate key presses.
         press_batch(commands): Simulate a batch of key presses.
     """
-    def __init__(self, key_press_queue, batch_interval=0.5):
+    def __init__(self, emulator_window_title, key_press_queue, batch_interval=0.5):
+        # Find the emulator window using partial title match
+        emulator_windows = gw.getWindowsWithTitle(emulator_window_title)
+        self.emulator_window = emulator_windows[0] if emulator_windows else None
+        if self.emulator_window:
+            self.emulator_window.activate()  # Activating the window
+        else:
+            print("Emulator window not found.")
         self.key_press_queue = key_press_queue
         self.batch_interval = batch_interval
         self.batch_commands = []
@@ -57,4 +65,5 @@ class KeyPressSimulator:
 
     def press_batch(self, commands):
         for command in commands:
-            pyautogui.press(command, interval=0.2)
+            self.emulator_window.activate()  # Activating the window
+            pydirectinput.press(command, interval=0.2)
