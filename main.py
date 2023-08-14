@@ -2,6 +2,7 @@
 import pygetwindow as gw
 import tiktok_live_client
 import key_press_simulator
+import queue
 
 
 def main():
