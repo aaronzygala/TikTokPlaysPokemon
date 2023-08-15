@@ -47,4 +47,4 @@ class TikTokLiveManager:
                               command.lower() in constants.command_to_key_mapping]
 
         if len(commands_triggered) > 0:
-            self.key_press_queue.put(commands_triggered[0])
+            self.key_press_queue.put([commands_triggered[0]])
