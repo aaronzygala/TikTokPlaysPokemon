@@ -59,12 +59,11 @@ class KeyPressSimulator:
             current_time = time.time()
             if current_time - self.last_batch_time >= self.batch_interval:
                 if self.batch_commands:
-                    self.press_batch(self.batch_commands)
+                    self.press(self.batch_commands)
                     self.batch_commands = []
                     self.last_batch_time = current_time
 
-    def press_batch(self, commands):
-        for command in commands:
-            self.emulator_window.activate()  # Activating the window
-            print("Command registered: ", command)
-            pydirectinput.press(command, interval=0.2)
+    def press(self, command):
+        self.emulator_window.activate()  # Activating the window
+        print("Command registered: ", command)
+        pydirectinput.press(command, interval=0.2)
