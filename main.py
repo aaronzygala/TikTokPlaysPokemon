@@ -1,11 +1,12 @@
 # main.py
+import constants
 import tiktok_live_client
 import key_press_simulator
 import queue
 import backend
 
 def main():
-    MODE = ["ORDER"]
+    MODE = [constants.DEFAULT_MODE]
     # Create a queue for key press batching
     key_press_queue = queue.Queue()
     # Create instances of TikTokLiveManager and KeyPressSimulator

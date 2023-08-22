@@ -2,6 +2,7 @@
 # import pydirectinput
 import threading
 import time
+import constants
 # import pygetwindow as gw
 
 
@@ -28,31 +29,43 @@ class KeyPressSimulator:
         simulate_key_presses(): Continuously process commands and simulate key presses.
         press_batch(commands): Simulate a batch of key presses.
     """
-    def __init__(self, emulator_window_title, key_press_queue, MODE, vote_interval=10.0):
+    def __init__(self, emulator_window_title, key_press_queue, MODE, vote_interval):
         # Find the emulator window using partial title match
+        emulator_windows = gw.getWindowsWithTitle(emulator_window_title)
+        self.emulator_window = emulator_windows[0] if emulator_windows else None
+        if self.emulator_window:
+            self.emulator_window.activate()  # Activating the window
+        else:
+            print("Emulator window not found.")
 
-
-        # emulator_windows = gw.getWindowsWithTitle(emulator_window_title)
-        # self.emulator_window = emulator_windows[0] if emulator_windows else None
-        # if self.emulator_window:
-        #     self.emulator_window.activate()  # Activating the window
-        # else:
-        #     print("Emulator window not found.")
-
+        tiktok_live_studio_windows = gw.getWindowsWithTitle("TikTok")
+        self.tiktok_live_studio_window = tiktok_live_studio_windows[0]
+        self.tiktok_focus_timer = constants.TIKTOK_FOCUS_TIMER # number of minutes to focus the window and press spacebar
 
         self.key_press_queue = key_press_queue
         self.votes = {}
-        self.vote_interval = vote_interval
+        self.vote_interval = constants.VOTE_INTERVAL
         self.last_vote_time = time.time()
-        self.thread = threading.Thread(target=self.simulate_key_presses)
+        self.key_press_thread = threading.Thread(target=self.simulate_key_presses)
+        self.focus_tiktok_studio_thread = threading.Thread(target=self.focus_tiktok_with_timer)
         self.mode = MODE
 
+    def focus_tiktok_with_timer(self):
+        while True:
+            # If the window is found, focus it and press the spacebar
+            self.tiktok_live_studio_window.activate()
+            pydirectinput.press('space')
+
+            time.sleep(self.tiktok_focus_timer * 60)  # Sleep for 30 minutes
+
     def start(self):
-        self.thread.start()
+        self.key_press_thread.start()
+        self.focus_tiktok_studio_thread.start()
 
     def stop(self):
         self.key_press_queue.put(None)
-        self.thread.join()
+        self.key_press_thread.join()
+        self.focus_tiktok_studio_thread.join()
 
     def simulate_key_presses(self):
         while True:
@@ -75,9 +88,9 @@ class KeyPressSimulator:
                     self.collect_vote(commands_to_press)
 
     def press(self, command):
-        # self.emulator_window.activate()  # Activating the window
+        self.emulator_window.activate()  # Activating the window
         print("Command registered: ", command)
-        # pydirectinput.press(command, interval=0.2)
+        pydirectinput.press(command, interval=0.2)
 
     def collect_vote(self, command):
         if command[0] in self.votes:

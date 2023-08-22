@@ -1,8 +1,10 @@
 # tiktok_live_client.py
 from TikTokLive import TikTokLiveClient
 from TikTokLive.types.events import CommentEvent, ConnectEvent, GiftEvent
+from PIL import Image
 import constants
-
+import os
+import random
 
 class TikTokLiveManager:
     """
@@ -52,8 +54,8 @@ class TikTokLiveManager:
         commands_triggered = [constants.command_to_key_mapping[command.lower()] for command in event.comment.split() if
                               command.lower() in constants.command_to_key_mapping]
 
-        # if event.comment == "TOGGLE":
-        #     self.toggle_mode()
+        if event.comment == "NEW BUDDY":
+            self.randomize_buddy()
 
         if len(commands_triggered) > 0:
             self.key_press_queue.put([commands_triggered[0]])
@@ -77,10 +79,19 @@ class TikTokLiveManager:
 
         if "Rose" in event.gift.info.name:
             print("RANDOMIZING BUDDY...")
-
+            self.randomize_buddy()
 
     def toggle_mode(self):
         if self.mode[0] == "ORDER":
             self.mode[0] = "CHAOS"
+            new_mode_file = "./OBS_Files/Chaos.png"
         else:
             self.mode[0] = "ORDER"
+            new_mode_file = "./OBS_Files/Order.png"
+
+        new_mode_image = Image.open(new_mode_file)
+        new_mode_image.save("./OBS_Files/CurrentMode.png")
+    def randomize_buddy(self):
+        new_buddy_file = random.choice(os.listdir("./assets/Pokemon"))
+        new_buddy_image = Image.open(new_buddy_file)
+        new_buddy_image.save("./OBS_Files/CurrentBudy.png")
