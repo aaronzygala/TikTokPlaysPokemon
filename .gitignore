@@ -9,3 +9,8 @@ tmp.py
 
 # Ignore the .pyc files
 __pycache__/
+
+.python-version
+
+# Ignore the log file for the backend.py script
+output.log
