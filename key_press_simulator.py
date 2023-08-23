@@ -113,6 +113,8 @@ class KeyPressSimulator:
     def process_sound_requests(self):
         while True:
             request = self.sound_request_queue.get()
+            if request is None:
+                continue
             if request == "theme_song":
                 self.mute()
                 # Play the sound
