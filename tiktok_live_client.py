@@ -71,14 +71,16 @@ class TikTokLiveManager:
             if len(parts) == 2 and parts[0] == "!ban" and parts[1] not in self.banned_list:
                 username_to_ban = parts[1]
                 print("BANNING A USER: " + username_to_ban)
-                with open("./users/banned.txt", "a") as banned_file:
-                    self.banned_list.append(username_to_ban)
-                    banned_file.write(username_to_ban + "\n")
-                if username_to_ban in self.whitelist:
-                    self.whitelist.remove(username_to_ban)
-                    with open("./users/whitelist.txt", "w") as whitelist_file:
-                        for user in self.whitelist:
-                            whitelist_file.write(user + "\n")
+                if username_to_ban not in self.admin_list:
+                    if username_to_ban in self.whitelist and event.user.unique_id in self.admin_list:
+                        self.whitelist.remove(username_to_ban)
+                        with open("./users/whitelist.txt", "w") as whitelist_file:
+                            for user in self.whitelist:
+                                whitelist_file.write(user + "\n")
+                    with open("./users/banned.txt", "a") as banned_file:
+                        self.banned_list.append(username_to_ban)
+                        banned_file.write(username_to_ban + "\n")
+
         else:
             # Parse the comment and check for custom commands
             if event.user.unique_id not in self.banned_list:
