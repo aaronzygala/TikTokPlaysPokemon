@@ -19,4 +19,6 @@ DEFAULT_MODE = "CHAOS"
 # Number of seconds for each vote in Order mode
 VOTE_INTERVAL = 10.0
 
-
+WHITELIST_PATH = ".\\users\\whitelist.txt"
+ADMIN_PATH = ".\\users\\admin.txt"
+BANNED_PATH = ".\\users\\banned.txt"

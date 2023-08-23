@@ -37,9 +37,9 @@ class TikTokLiveManager:
         self.client.add_listener("comment", self.on_comment)
         self.client.on("gift")(self.on_gift)
         self.mode = MODE
-        self.admin_list = self.read_lines("./users/admin.txt")
-        self.whitelist = self.read_lines("./users/whitelist.txt")
-        self.banned_list = self.read_lines("./users/banned.txt")
+        self.admin_list = self.read_lines(constants.ADMIN_PATH)
+        self.whitelist = self.read_lines(constants.WHITELIST_PATH)
+        self.banned_list = self.read_lines(constants.BANNED_PATH)
 
     def read_lines(self, filename):
         with open(filename) as file:
@@ -69,7 +69,7 @@ class TikTokLiveManager:
             if len(parts) == 2 and parts[0] == "!whitelist" and parts[1] not in self.whitelist:
                 username_to_whitelist = parts[1]
                 print("WHITELISTING A USER: " + username_to_whitelist)
-                with open("./users/whitelist.txt", "a") as whitelist_file:
+                with open(constants.WHITELIST_PATH, "a") as whitelist_file:
                     self.whitelist.append(username_to_whitelist)
                     whitelist_file.write(username_to_whitelist + "\n")
         elif event.comment.startswith("!ban") and event.user.unique_id in self.whitelist:
@@ -80,10 +80,10 @@ class TikTokLiveManager:
                 if username_to_ban not in self.admin_list:
                     if username_to_ban in self.whitelist and event.user.unique_id in self.admin_list:
                         self.whitelist.remove(username_to_ban)
-                        with open("./users/whitelist.txt", "w") as whitelist_file:
+                        with open(constants.WHITELIST_PATH, "w") as whitelist_file:
                             for user in self.whitelist:
                                 whitelist_file.write(user + "\n")
-                    with open("./users/banned.txt", "a") as banned_file:
+                    with open(constants.BANNED_PATH, "a") as banned_file:
                         self.banned_list.append(username_to_ban)
                         banned_file.write(username_to_ban + "\n")
 
@@ -120,17 +120,18 @@ class TikTokLiveManager:
         print("TOGGLING GAME MODE")
         if self.mode[0] == "ORDER":
             self.mode[0] = "CHAOS"
-            new_mode_file = "./OBS_Files/Chaos.png"
+            new_mode_file = ".\\OBS_Files\\Chaos.png"
         else:
             self.mode[0] = "ORDER"
-            new_mode_file = "./OBS_Files/Order.png"
+            new_mode_file = ".\\OBS_Files\\Order.png"
 
         new_mode_image = Image.open(new_mode_file)
-        new_mode_image.save("./OBS_Files/CurrentMode.png")
+        new_mode_image.save(".\\OBS_Files\\CurrentMode.png")
         print(f"Game mode is now: {self.mode[0]}")
 
     def randomize_buddy(self):
         print("RANDOMIZING BUDDY...")
-        new_buddy_file = random.choice(os.listdir("./assets/Pokemon"))
+        new_buddy_file = random.choice(os.listdir(".\\assets\\Pokemon"))
+        print("new_buddy_file: " + new_buddy_file)
         new_buddy_image = Image.open(new_buddy_file)
-        new_buddy_image.save("./OBS_Files/CurrentBuddy.png")
+        new_buddy_image.save(".\\OBS_Files\\CurrentBuddy.png")
