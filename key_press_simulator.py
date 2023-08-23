@@ -4,7 +4,7 @@ import threading
 import time
 import constants
 import pygetwindow as gw
-
+import playsound
 
 class KeyPressSimulator:
     """
@@ -29,7 +29,7 @@ class KeyPressSimulator:
         simulate_key_presses(): Continuously process commands and simulate key presses.
         press_batch(commands): Simulate a batch of key presses.
     """
-    def __init__(self, emulator_window_title, key_press_queue, MODE):
+    def __init__(self, emulator_window_title, key_press_queue, sound_request_queue, MODE):
         # Find the emulator window using partial title match
         emulator_windows = gw.getWindowsWithTitle(emulator_window_title)
         self.emulator_window = emulator_windows[0] if emulator_windows else None
@@ -43,11 +43,13 @@ class KeyPressSimulator:
         self.tiktok_focus_timer = constants.TIKTOK_FOCUS_TIMER # number of minutes to focus the window and press spacebar
 
         self.key_press_queue = key_press_queue
+        self.sound_request_queue = sound_request_queue
         self.votes = {}
         self.vote_interval = constants.VOTE_INTERVAL
         self.last_vote_time = time.time()
         self.key_press_thread = threading.Thread(target=self.simulate_key_presses)
         self.focus_tiktok_studio_thread = threading.Thread(target=self.focus_tiktok_with_timer)
+        self.sound_request_thread = threading.Thread(target=self.process_sound_requests)
         self.mode = MODE
 
     def focus_tiktok_with_timer(self):
@@ -61,11 +63,14 @@ class KeyPressSimulator:
     def start(self):
         self.key_press_thread.start()
         self.focus_tiktok_studio_thread.start()
+        self.sound_request_thread.start()  # Start the sound request processing thread
 
     def stop(self):
         self.key_press_queue.put(None)
+        self.sound_request_queue.put(None)
         self.key_press_thread.join()
         self.focus_tiktok_studio_thread.join()
+        self.sound_request_thread.join()
 
     def simulate_key_presses(self):
         while True:
@@ -97,3 +102,25 @@ class KeyPressSimulator:
             self.votes[command[0]] += 1
         else:
             self.votes[command[0]] = 1
+
+    def process_sound_requests(self):
+        while True:
+            request = self.sound_request_queue.get()
+            if request == "theme_song":
+                self.mute()
+                # Play the sound
+                playsound(constants.THEME_SONG)
+                # Wait for the sound to finish playing
+                time.sleep(constants.THEME_SONG_DURATION_SECONDS)
+                self.unmute()
+            # Add more conditions for handling other sound requests
+
+    def mute(self):
+        if self.emulator_window:
+            self.emulator_window.activate()  # Activate the emulator window
+            pydirectinput.press(constants.MUTE_INPUT)  # Simulate pressing the mute key
+
+    def unmute(self):
+        if self.emulator_window:
+            self.emulator_window.activate()  # Activate the emulator window
+            pydirectinput.press(constants.UNMUTE_INPUT)  # Simulate pressing the unmute key

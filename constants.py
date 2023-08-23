@@ -24,13 +24,21 @@ DEFAULT_MODE = "CHAOS"
 # Number of seconds for each vote in Order mode
 VOTE_INTERVAL = 10.0
 
+# Number of seconds in theme song in SECONDS
+THEME_SONG_DURATION_SECONDS = 197
+
+# Inputs to mute/unmute
+MUTE_INPUT = 'y'
+UNMUTE_INPUT = 'y'
+
 # PATH CONSTANTS - using absolute values
 script_directory = os.path.dirname(os.path.abspath(__file__))
 CHAOS_IMAGE = os.path.join(script_directory, "OBS_Files", "Chaos.png")
 ORDER_IMAGE = os.path.join(script_directory, "OBS_Files", "Order.png")
 CURRENT_MODE_IMAGE = os.path.join(script_directory, "OBS_Files", "CurrentMode.png")
 CURRENT_BUDDY_IMAGE = os.path.join(script_directory, "OBS_Files", "CurrentBuddy.png")
-POKEMON_DIRECTORIES = os.path.join(script_directory, "assets", "Pokemon")
+POKEMON_DIRECTORY = os.path.join(script_directory, "assets", "Pokemon")
+THEME_SONG = os.path.join(script_directory, "assets", "Pokemon.mp3")
 
 WHITELIST_PATH = os.path.join(script_directory, "users", "whitelist.txt")
 ADMIN_PATH = os.path.join(script_directory, "users", "admin.txt")

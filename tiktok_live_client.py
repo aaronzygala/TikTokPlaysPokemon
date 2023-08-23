@@ -6,6 +6,7 @@ import constants
 import os
 import random
 
+
 class TikTokLiveManager:
     """
     A class that manages TikTok Live interactions and processes comments for key presses.
@@ -24,7 +25,7 @@ class TikTokLiveManager:
         on_comment(event): Callback for handling comment events and sending key press commands.
     """
 
-    def __init__(self, unique_id, key_press_queue, MODE):
+    def __init__(self, unique_id, key_press_queue, sound_request_queue, MODE):
         self.client = TikTokLiveClient(
             unique_id,
             # ws_ping_interval=30.0,  # Increase the interval between keepalive pings
@@ -42,6 +43,7 @@ class TikTokLiveManager:
         self.whitelist = self.read_lines(constants.WHITELIST_PATH)
         self.ban_votes_per_user = {}
         self.banned_list = self.read_lines(constants.BANNED_PATH)
+        self.sound_request_queue = sound_request_queue
 
     def init_mode_image(self):
         chaos_image = Image.open(constants.CHAOS_IMAGE)
@@ -163,13 +165,13 @@ class TikTokLiveManager:
             self.toggle_mode()
 
         if "Enjoy Music" in event.gift.info.name:
-            print("NOT IMPLEMENTED!!! TODO: PROGRAM ANIME THEME SONG...")
+            self.play_theme_song()
 
         if "Rose" in event.gift.info.name:
             self.randomize_buddy()
 
     def toggle_mode(self):
-        print("TOGGLING GAME MODE")
+        print("TOGGLING GAME MODE...")
         if self.mode[0] == "ORDER":
             self.mode[0] = "CHAOS"
             new_mode_file = constants.CHAOS_IMAGE
@@ -184,8 +186,12 @@ class TikTokLiveManager:
 
     def randomize_buddy(self):
         print("RANDOMIZING BUDDY...")
-        new_buddy_file = random.choice(os.listdir(constants.POKEMON_DIRECTORIES))
+        new_buddy_file = random.choice(os.listdir(constants.POKEMON_DIRECTORY))
         print("new_buddy_file: " + new_buddy_file)
-        new_buddy_image = Image.open(os.path.join(constants.POKEMON_DIRECTORIES, new_buddy_file))
+        new_buddy_image = Image.open(os.path.join(constants.POKEMON_DIRECTORY, new_buddy_file))
         new_buddy_image.save(constants.CURRENT_BUDDY_IMAGE)
         new_buddy_image.close()
+
+    def play_theme_song(self):
+        print("PLAYING ANIME THEME SONG...")
+        self.sound_request_queue.put("theme_song")
