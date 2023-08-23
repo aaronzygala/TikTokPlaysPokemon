@@ -72,6 +72,15 @@ class TikTokLiveManager:
                 with open(constants.WHITELIST_PATH, "a") as whitelist_file:
                     self.whitelist.append(username_to_whitelist)
                     whitelist_file.write(username_to_whitelist + "\n")
+        elif event.comment.startswith("!remove_whitelist") and event.user.unique_id in self.admin_list:
+            parts = event.comment.split()
+            if len(parts) == 2 and parts[0] == "!whitelist" and parts[1] not in self.whitelist:
+                username_to_whitelist = parts[1]
+                print("REMOVING A USER FROM WHITELIST: " + username_to_whitelist)
+                self.whitelist.remove(username_to_whitelist)
+                with open(constants.WHITELIST_PATH, "w") as whitelist_file:
+                    for user in self.whitelist:
+                        whitelist_file.write(user + "\n")
         elif event.comment.startswith("!ban") and event.user.unique_id in self.whitelist:
             parts = event.comment.split()
             if len(parts) == 2 and parts[0] == "!ban" and parts[1] not in self.banned_list:
