@@ -57,11 +57,11 @@ class TikTokLiveManager:
     async def on_comment(self, event: CommentEvent):
         print(f"{event.user.nickname}: {event.comment}")
 
-        if event.comment == "TEST_BUDDY":
-            self.randomize_buddy()
-
-        if event.comment == "TEST_MODE":
-            self.toggle_mode()
+        # if event.comment == "TEST_BUDDY":
+        #     self.randomize_buddy()
+        #
+        # if event.comment == "TEST_MODE":
+        #     self.toggle_mode()
 
         # Check if the comment is a whitelisting command and user is in admin_list
         if event.comment.startswith("!whitelist") and event.user.unique_id in self.admin_list:
