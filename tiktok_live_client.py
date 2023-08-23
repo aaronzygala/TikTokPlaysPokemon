@@ -39,6 +39,7 @@ class TikTokLiveManager:
         self.mode = MODE
         self.admin_list = self.read_lines(constants.ADMIN_PATH)
         self.whitelist = self.read_lines(constants.WHITELIST_PATH)
+        self.ban_votes_per_user = {}
         self.banned_list = self.read_lines(constants.BANNED_PATH)
 
     def read_lines(self, filename):
@@ -87,9 +88,6 @@ class TikTokLiveManager:
                 commands_triggered = [constants.command_to_key_mapping[command.lower()] for command in event.comment.split()
                                       if command.lower() in constants.command_to_key_mapping]
 
-                # if event.comment == "NEW BUDDY":
-                #     self.randomize_buddy()
-
                 if len(commands_triggered) > 0:
                     self.key_press_queue.put([commands_triggered[0]])
                     comment_data = {
@@ -132,11 +130,25 @@ class TikTokLiveManager:
             if username_to_ban in self.whitelist:
                 print("Whitelisted users are not allowed to ban other whitelisted users.")
             else:
-                self.banned_list.append(username_to_ban)
-                self.add_to_file(constants.BANNED_PATH, username_to_ban)
+                self.add_ban_vote(username_to_ban)
+                vote_count = self.get_ban_vote_count(username_to_ban)
+                if vote_count >= constants.VOTE_BAN_MINIMUM:
+                    self.banned_list.append(username_to_ban)
+                    self.add_to_file(constants.BANNED_PATH, username_to_ban)
+                    del self.ban_votes_per_user[username_to_ban]
+                else:
+                    print(f"{constants.VOTE_BAN_MINIMUM - vote_count} more votes are needed to ban {username_to_ban}.")
         else:
             print("Only admins or whitelisted users are allowed to ban users.")
 
+    def get_ban_vote_count(self, username):
+        return self.ban_votes_per_user[username]
+
+    def add_ban_vote(self, username):
+        if username in self.ban_votes_per_user:
+            self.ban_votes_per_user[username] += 1
+        else:
+            self.ban_votes_per_user[username] = 1
 
     async def on_gift(self, event: GiftEvent):
         print(f"{event.user.nickname} sent \"{event.gift.info.name}\"")

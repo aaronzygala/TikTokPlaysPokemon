@@ -12,6 +12,8 @@ command_to_key_mapping = {
     "select": 'o',
     "start": 'p',
 }
+# Number of whitelist votes needed to ban a user
+VOTE_BAN_MINIMUM = 5
 
 # The number of MINUTES for the timer to re-focus the TikTok Live Studio app
 TIKTOK_FOCUS_TIMER = 30.0
@@ -22,6 +24,7 @@ DEFAULT_MODE = "CHAOS"
 # Number of seconds for each vote in Order mode
 VOTE_INTERVAL = 10.0
 
+# PATH CONSTANTS - using absolute values
 script_directory = os.path.dirname(os.path.abspath(__file__))
 CHAOS_IMAGE = os.path.join(script_directory, "OBS_Files", "Chaos.png")
 ORDER_IMAGE = os.path.join(script_directory, "OBS_Files", "Order.png")
