@@ -58,12 +58,6 @@ class TikTokLiveManager:
     async def on_comment(self, event: CommentEvent):
         print(f"{event.user.nickname}: {event.comment}")
 
-        # if event.comment == "TEST_BUDDY":
-        #     self.randomize_buddy()
-        #
-        # if event.comment == "TEST_MODE":
-        #     self.toggle_mode()
-
         # Check if the comment is a whitelisting command and user is in admin_list
         if event.comment.startswith("!whitelist") and event.user.unique_id in self.admin_list:
             parts = event.comment.split()
@@ -84,6 +78,13 @@ class TikTokLiveManager:
                 self.ban_user(username_to_ban, event.user.unique_id)
         else:
             # Parse the comment and check for custom commands
+            if event.user.unique_id in self.admin_list:
+                if event.comment == "CHANGE_BUDDY":
+                    self.randomize_buddy()
+
+                if event.comment == "CHANGE_MODE":
+                    self.toggle_mode()
+
             if event.user.unique_id not in self.banned_list:
                 commands_triggered = [constants.command_to_key_mapping[command.lower()] for command in event.comment.split()
                                       if command.lower() in constants.command_to_key_mapping]
