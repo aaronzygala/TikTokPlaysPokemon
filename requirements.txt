@@ -34,8 +34,6 @@ PyDirectInput==1.0.4
 pyee==11.0.0
 PyGetWindow==0.0.9
 PyMsgBox==1.0.9
-pyobjc==9.2
-pyobjc-core==9.2
 pyperclip==1.8.2
 PyRect==0.2.0
 pyscreenshot==3.1
