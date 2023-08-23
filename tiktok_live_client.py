@@ -68,34 +68,19 @@ class TikTokLiveManager:
             parts = event.comment.split()
             if len(parts) == 2 and parts[0] == "!whitelist" and parts[1] not in self.whitelist:
                 username_to_whitelist = parts[1]
-                print("WHITELISTING A USER: " + username_to_whitelist)
-                with open(constants.WHITELIST_PATH, "a") as whitelist_file:
-                    self.whitelist.append(username_to_whitelist)
-                    whitelist_file.write(username_to_whitelist + "\n")
+                self.whitelist_user(username_to_whitelist)
+
         elif event.comment.startswith("!remove_whitelist") and event.user.unique_id in self.admin_list:
             parts = event.comment.split()
             if len(parts) == 2 and parts[0] == "!whitelist" and parts[1] not in self.whitelist:
                 username_to_whitelist = parts[1]
-                print("REMOVING A USER FROM WHITELIST: " + username_to_whitelist)
-                self.whitelist.remove(username_to_whitelist)
-                with open(constants.WHITELIST_PATH, "w") as whitelist_file:
-                    for user in self.whitelist:
-                        whitelist_file.write(user + "\n")
+                self.remove_from_whitelist(username_to_whitelist)
+
         elif event.comment.startswith("!ban") and event.user.unique_id in self.whitelist:
             parts = event.comment.split()
             if len(parts) == 2 and parts[0] == "!ban" and parts[1] not in self.banned_list:
                 username_to_ban = parts[1]
-                print("BANNING A USER: " + username_to_ban)
-                if username_to_ban not in self.admin_list:
-                    if username_to_ban in self.whitelist and event.user.unique_id in self.admin_list:
-                        self.whitelist.remove(username_to_ban)
-                        with open(constants.WHITELIST_PATH, "w") as whitelist_file:
-                            for user in self.whitelist:
-                                whitelist_file.write(user + "\n")
-                    with open(constants.BANNED_PATH, "a") as banned_file:
-                        self.banned_list.append(username_to_ban)
-                        banned_file.write(username_to_ban + "\n")
-
+                self.ban_user(username_to_ban, event.user.unique_id)
         else:
             # Parse the comment and check for custom commands
             if event.user.unique_id not in self.banned_list:
@@ -114,9 +99,48 @@ class TikTokLiveManager:
                     }
                     self.recent_comments.append(comment_data)  # Store the comment data
 
+    def add_to_file(self, file_path, string_to_add):
+        with open(file_path, "a") as whitelist_file:
+            whitelist_file.write(string_to_add + "\n")
+
+    def rewrite_file(self, file_path, rewrite_list):
+        with open(file_path, "w") as whitelist_file:
+            for string in rewrite_list:
+                whitelist_file.write(string + "\n")
+    def whitelist_user(self, username):
+        print("WHITELISTING A USER: " + username)
+        self.whitelist.append(username)
+        self.add_to_file(constants.WHITELIST_PATH, username)
+
+    def remove_from_whitelist(self, username):
+        print("REMOVING A USER FROM WHITELIST: " + username)
+        self.whitelist.remove(username)
+        self.rewrite_file(constants.WHITELIST_PATH, self.whitelist)
+
+    def ban_user(self, username_to_ban, username_of_caller):
+        if username_to_ban in self.admin_list:
+            return
+
+        print("BANNING A USER: " + username_to_ban)
+        if username_of_caller in self.admin_list:
+            if username_to_ban in self.whitelist:
+                self.whitelist.remove(username_to_ban)
+                self.rewrite_file(constants.WHITELIST_PATH, self.whitelist)
+            self.banned_list.append(username_to_ban)
+            self.add_to_file(constants.BANNED_PATH, username_to_ban)
+        elif username_of_caller in self.whitelist:
+            if username_to_ban in self.whitelist:
+                print("Whitelisted users are not allowed to ban other whitelisted users.")
+            else:
+                self.banned_list.append(username_to_ban)
+                self.add_to_file(constants.BANNED_PATH, username_to_ban)
+        else:
+            print("Only admins or whitelisted users are allowed to ban users.")
+
+
     async def on_gift(self, event: GiftEvent):
         print(f"{event.user.nickname} sent \"{event.gift.info.name}\"")
-        if "Game Controller" in event.gift.info.name:
+        if "Pizza" in event.gift.info.name:
             self.toggle_mode()
 
         if "Enjoy Music" in event.gift.info.name:
