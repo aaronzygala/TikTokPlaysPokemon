@@ -120,18 +120,20 @@ class TikTokLiveManager:
         print("TOGGLING GAME MODE")
         if self.mode[0] == "ORDER":
             self.mode[0] = "CHAOS"
-            new_mode_file = ".\\OBS_Files\\Chaos.png"
+            new_mode_file = constants.CHAOS_IMAGE
         else:
             self.mode[0] = "ORDER"
-            new_mode_file = ".\\OBS_Files\\Order.png"
+            new_mode_file = constants.ORDER_IMAGE
 
         new_mode_image = Image.open(new_mode_file)
-        new_mode_image.save(".\\OBS_Files\\CurrentMode.png")
+        new_mode_image.save(constants.CURRENT_MODE_IMAGE)
+        new_mode_image.close()
         print(f"Game mode is now: {self.mode[0]}")
 
     def randomize_buddy(self):
         print("RANDOMIZING BUDDY...")
-        new_buddy_file = random.choice(os.listdir(".\\assets\\Pokemon"))
+        new_buddy_file = random.choice(os.listdir(constants.POKEMON_DIRECTORIES))
         print("new_buddy_file: " + new_buddy_file)
-        new_buddy_image = Image.open(new_buddy_file)
-        new_buddy_image.save(".\\OBS_Files\\CurrentBuddy.png")
+        new_buddy_image = Image.open(os.path.join(constants.POKEMON_DIRECTORIES, new_buddy_file))
+        new_buddy_image.save(constants.CURRENT_BUDDY_IMAGE)
+        new_buddy_image.close()

@@ -1,4 +1,7 @@
 # constants.py
+import os
+
+
 command_to_key_mapping = {
     "up": 'up',
     "down": 'down',
@@ -19,6 +22,13 @@ DEFAULT_MODE = "CHAOS"
 # Number of seconds for each vote in Order mode
 VOTE_INTERVAL = 10.0
 
-WHITELIST_PATH = ".\\users\\whitelist.txt"
-ADMIN_PATH = ".\\users\\admin.txt"
-BANNED_PATH = ".\\users\\banned.txt"
+script_directory = os.path.dirname(os.path.abspath(__file__))
+CHAOS_IMAGE = os.path.join(script_directory, "OBS_Files", "Chaos.png")
+ORDER_IMAGE = os.path.join(script_directory, "OBS_Files", "Order.png")
+CURRENT_MODE_IMAGE = os.path.join(script_directory, "OBS_Files", "CurrentMode.png")
+CURRENT_BUDDY_IMAGE = os.path.join(script_directory, "OBS_Files", "CurrentBuddy.png")
+POKEMON_DIRECTORIES = os.path.join(script_directory, "assets", "Pokemon")
+
+WHITELIST_PATH = os.path.join(script_directory, "users", "whitelist.txt")
+ADMIN_PATH = os.path.join(script_directory, "users", "admin.txt")
+BANNED_PATH = os.path.join(script_directory, "users", "banned.txt")
