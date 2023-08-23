@@ -39,7 +39,11 @@ class KeyPressSimulator:
             print("Emulator window not found.")
 
         tiktok_live_studio_windows = gw.getWindowsWithTitle("TikTok")
-        self.tiktok_live_studio_window = tiktok_live_studio_windows[0]
+        self.tiktok_live_studio_window = tiktok_live_studio_windows[0] if tiktok_live_studio_windows else None
+        if self.tiktok_live_studio_window:
+            self.tiktok_live_studio_window.activate()  # Activating the window
+        else:
+            print("TikTokLive Studio window not found.")
         self.tiktok_focus_timer = constants.TIKTOK_FOCUS_TIMER # number of minutes to focus the window and press spacebar
 
         self.key_press_queue = key_press_queue
@@ -53,12 +57,15 @@ class KeyPressSimulator:
         self.mode = MODE
 
     def focus_tiktok_with_timer(self):
-        while True:
-            # If the window is found, focus it and press the spacebar
-            self.tiktok_live_studio_window.activate()
-            pydirectinput.press('space')
-
-            time.sleep(self.tiktok_focus_timer * 60)  # Sleep for 30 minutes
+        try:
+            while True:
+                if self.tiktok_live_studio_window:
+                    self.tiktok_live_studio_window.activate()
+                    pydirectinput.press('space')
+                time.sleep(self.tiktok_focus_timer * 60)
+        except gw.PyGetWindowException as e:
+            print("An exception occurred:", e)
+            pass  # Continue execution
 
     def start(self):
         self.key_press_thread.start()
