@@ -126,4 +126,4 @@ class TikTokLiveManager:
     def randomize_buddy(self):
         new_buddy_file = random.choice(os.listdir("./assets/Pokemon"))
         new_buddy_image = Image.open(new_buddy_file)
-        new_buddy_image.save("./OBS_Files/CurrentBudy.png")
+        new_buddy_image.save("./OBS_Files/CurrentBuddy.png")
