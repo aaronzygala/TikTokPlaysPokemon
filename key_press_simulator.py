@@ -4,7 +4,7 @@ import threading
 import time
 import constants
 import pygetwindow as gw
-import playsound
+from playsound import playsound
 
 class KeyPressSimulator:
     """
