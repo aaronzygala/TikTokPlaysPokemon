@@ -57,6 +57,12 @@ class TikTokLiveManager:
     async def on_comment(self, event: CommentEvent):
         print(f"{event.user.nickname}: {event.comment}")
 
+        if event.comment == "TEST_BUDDY":
+            self.randomize_buddy()
+
+        if event.comment == "TEST_MODE":
+            self.toggle_mode()
+
         # Check if the comment is a whitelisting command and user is in admin_list
         if event.comment.startswith("!whitelist") and event.user.unique_id in self.admin_list:
             parts = event.comment.split()
@@ -102,18 +108,16 @@ class TikTokLiveManager:
     async def on_gift(self, event: GiftEvent):
         print(f"{event.user.nickname} sent \"{event.gift.info.name}\"")
         if "Game Controller" in event.gift.info.name:
-            print("TOGGLING GAME MODE")
             self.toggle_mode()
-            print(f"Game mode is now: {self.mode[0]}")
 
         if "Enjoy Music" in event.gift.info.name:
-            print("PLAYING ANIME THEME SONG...")
+            print("NOT IMPLEMENTED!!! TODO: PROGRAM ANIME THEME SONG...")
 
         if "Rose" in event.gift.info.name:
-            print("RANDOMIZING BUDDY...")
             self.randomize_buddy()
 
     def toggle_mode(self):
+        print("TOGGLING GAME MODE")
         if self.mode[0] == "ORDER":
             self.mode[0] = "CHAOS"
             new_mode_file = "./OBS_Files/Chaos.png"
@@ -123,7 +127,10 @@ class TikTokLiveManager:
 
         new_mode_image = Image.open(new_mode_file)
         new_mode_image.save("./OBS_Files/CurrentMode.png")
+        print(f"Game mode is now: {self.mode[0]}")
+
     def randomize_buddy(self):
+        print("RANDOMIZING BUDDY...")
         new_buddy_file = random.choice(os.listdir("./assets/Pokemon"))
         new_buddy_image = Image.open(new_buddy_file)
         new_buddy_image.save("./OBS_Files/CurrentBuddy.png")
