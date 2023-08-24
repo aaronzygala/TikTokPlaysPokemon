@@ -66,6 +66,9 @@ class TikTokLiveManager:
     async def on_comment(self, event: CommentEvent):
         print(f"{event.user.nickname}: {event.comment}")
 
+        if event.comment is None:
+            return  # Ignore comments with None content
+
         # Check if the comment is a whitelisting command and user is in admin_list
         if event.comment.startswith("!whitelist") and event.user.unique_id in self.admin_list:
             parts = event.comment.split()

@@ -56,6 +56,9 @@ class KeyPressSimulator:
         self.sound_request_thread = threading.Thread(target=self.process_sound_requests)
         self.mode = MODE
 
+        self.emulator_window_lock = threading.Lock()  # Create a lock for self.emulator_window
+        self.votes_lock = threading.Lock()  # Create a lock for accessing self.votes
+
     def focus_tiktok_with_timer(self):
         try:
             while True:
@@ -94,21 +97,24 @@ class KeyPressSimulator:
                     print(self.votes)
                     most_common_command = max(self.votes, key=self.votes.get)
                     self.press([most_common_command])
-                    self.votes.clear()
+                    with self.votes_lock:
+                        self.votes.clear()
                     self.last_vote_time = current_time  # Update last_vote_time after performing vote
                 else:
                     self.collect_vote(commands_to_press)
 
     def press(self, command):
-        self.emulator_window.activate()  # Activating the window
-        print("Command registered: ", command)
-        pydirectinput.press(command, interval=0.2)
+        with self.emulator_window_lock:
+            self.emulator_window.activate()  # Activating the window
+            print("Command registered: ", command)
+            pydirectinput.press(command, interval=0.2)
 
     def collect_vote(self, command):
-        if command[0] in self.votes:
-            self.votes[command[0]] += 1
-        else:
-            self.votes[command[0]] = 1
+        with self.votes_lock:
+            if command[0] in self.votes:
+                self.votes[command[0]] += 1
+            else:
+                self.votes[command[0]] = 1
 
     def process_sound_requests(self):
         while True:
@@ -125,11 +131,7 @@ class KeyPressSimulator:
             # Add more conditions for handling other sound requests
 
     def mute(self):
-        if self.emulator_window:
-            self.emulator_window.activate()  # Activate the emulator window
-            pydirectinput.press(constants.MUTE_INPUT)  # Simulate pressing the mute key
+        self.press(constants.MUTE_INPUT)  # Simulate pressing the mute key
 
     def unmute(self):
-        if self.emulator_window:
-            self.emulator_window.activate()  # Activate the emulator window
-            pydirectinput.press(constants.UNMUTE_INPUT)  # Simulate pressing the unmute key
+        self.press(constants.UNMUTE_INPUT)  # Simulate pressing the unmute key
