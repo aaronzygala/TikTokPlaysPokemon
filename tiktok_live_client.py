@@ -96,6 +96,9 @@ class TikTokLiveManager:
                 if event.comment == "CHANGE_MODE":
                     self.toggle_mode()
 
+                if event.comment == "START_SONG":
+                    self.play_theme_song()
+
             if event.user.unique_id not in self.banned_list:
                 commands_triggered = [constants.command_to_key_mapping[command.lower()] for command in event.comment.split()
                                       if command.lower() in constants.command_to_key_mapping]
