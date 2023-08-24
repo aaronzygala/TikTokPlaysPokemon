@@ -38,17 +38,21 @@ class TikTokLiveManager:
         self.client.add_listener("comment", self.on_comment)
         self.client.on("gift")(self.on_gift)
         self.mode = MODE
-        self.init_mode_image()
+        self.init_images()
         self.admin_list = self.read_lines(constants.ADMIN_PATH)
         self.whitelist = self.read_lines(constants.WHITELIST_PATH)
         self.ban_votes_per_user = {}
         self.banned_list = self.read_lines(constants.BANNED_PATH)
         self.sound_request_queue = sound_request_queue
 
-    def init_mode_image(self):
+    def init_images(self):
         chaos_image = Image.open(constants.CHAOS_IMAGE)
         chaos_image.save(constants.CURRENT_MODE_IMAGE)
         chaos_image.close()
+
+        buddy_image = Image.open(constants.DEFAULT_BUDDY_IMAGE)
+        buddy_image.save(constants.CURRENT_BUDDY_IMAGE)
+        buddy_image.close()
 
     def read_lines(self, filename):
         with open(filename) as file:
