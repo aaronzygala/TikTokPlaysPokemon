@@ -14,3 +14,6 @@ __pycache__/
 
 # Ignore the log file for the backend.py script
 output.log
+
+# Stop resetting the users files every commit
+users/*.txt
