@@ -128,8 +128,10 @@ class KeyPressSimulator:
                 self.toggle_mute()
                 # Play the sound
                 playsound(constants.THEME_SONG)
+                print("THEME SONG COMPLETE")
+
                 # Wait for the sound to finish playing
-                time.sleep(constants.THEME_SONG_DURATION_SECONDS)
+                #time.sleep(constants.THEME_SONG_DURATION_SECONDS)
                 print("UN-MUTING SONG...")
                 self.toggle_mute()
             # Add more conditions for handling other sound requests
