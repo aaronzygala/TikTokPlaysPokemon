@@ -45,7 +45,7 @@ class TikTokLiveManager:
         self.ban_votes_per_user = {}
         self.banned_list = self.read_lines(constants.BANNED_PATH)
         self.sound_request_queue = sound_request_queue
-        self.processed_gifts = set()  # Track processed gifts
+        self.processed_gifts = {}
 
     def init_images(self):
         chaos_image = Image.open(constants.CHAOS_IMAGE)
@@ -173,8 +173,11 @@ class TikTokLiveManager:
 
     async def on_gift(self, event: GiftEvent):
         unique_identifier = self.create_unique_identifier(event)
+        current_time = time.time()
+
         if unique_identifier in self.processed_gifts:
-            return
+            if current_time - self.processed_gifts[unique_identifier] <= 5:
+                return
         print(f"{event.user.nickname} sent \"{event.gift.info.name}\"")
         if "Pizza" in event.gift.info.name:
             self.toggle_mode()
@@ -185,12 +188,22 @@ class TikTokLiveManager:
         if "Rose" in event.gift.info.name:
             self.randomize_buddy()
 
-        self.processed_gifts.add(unique_identifier)
+        self.processed_gifts[unique_identifier] = current_time
 
     def create_unique_identifier(self, event: GiftEvent):
         # Combine attributes to create a unique identifier
-        identifier = f"{event.user.unique_id}_{event.gift.id}_{time.strftime('%Y,%m,%d,%H,%M,%S')}"
+        identifier = f"{event.user.unique_id}_{event.gift.id}"
         return identifier
+
+    def cleanup_old_gifts(self, current_time):
+        # Remove expired entries from the processed_gifts dictionary
+        valid_window = 5  # 5 seconds
+        expired_gifts = {
+            identifier: timestamp for identifier, timestamp in self.processed_gifts.items()
+            if current_time - timestamp > valid_window
+        }
+        for identifier in expired_gifts:
+            del self.processed_gifts[identifier]
 
     def toggle_mode(self):
         print("TOGGLING GAME MODE...")
