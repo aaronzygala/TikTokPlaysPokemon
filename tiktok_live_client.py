@@ -44,6 +44,7 @@ class TikTokLiveManager:
         self.ban_votes_per_user = {}
         self.banned_list = self.read_lines(constants.BANNED_PATH)
         self.sound_request_queue = sound_request_queue
+        self.processed_gifts = set()  # Track processed gifts
 
     def init_images(self):
         chaos_image = Image.open(constants.CHAOS_IMAGE)
@@ -170,6 +171,8 @@ class TikTokLiveManager:
             self.ban_votes_per_user[username] = 1
 
     async def on_gift(self, event: GiftEvent):
+        if event.gift.id in self.processed_gifts:
+            return
         print(f"{event.user.nickname} sent \"{event.gift.info.name}\"")
         if "Pizza" in event.gift.info.name:
             self.toggle_mode()
@@ -179,6 +182,8 @@ class TikTokLiveManager:
 
         if "Rose" in event.gift.info.name:
             self.randomize_buddy()
+
+        self.processed_gifts.add(event.gift.id)
 
     def toggle_mode(self):
         print("TOGGLING GAME MODE...")
