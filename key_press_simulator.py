@@ -122,16 +122,14 @@ class KeyPressSimulator:
             if request is None:
                 continue
             if request == "theme_song":
-                self.mute()
+                self.toggle_mute()
                 # Play the sound
                 playsound(constants.THEME_SONG)
                 # Wait for the sound to finish playing
                 time.sleep(constants.THEME_SONG_DURATION_SECONDS)
-                self.unmute()
+                self.toggle_mute()
             # Add more conditions for handling other sound requests
 
-    def mute(self):
-        self.press(constants.MUTE_INPUT)  # Simulate pressing the mute key
+    def toggle_mute(self):
+        self.press(constants.TOGGLE_MUTE_INPUT)  # Simulate pressing the mute key
 
-    def unmute(self):
-        self.press(constants.UNMUTE_INPUT)  # Simulate pressing the unmute key

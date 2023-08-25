@@ -28,8 +28,7 @@ VOTE_INTERVAL = 10.0
 THEME_SONG_DURATION_SECONDS = 197
 
 # Inputs to mute/unmute
-MUTE_INPUT = 'y'
-UNMUTE_INPUT = 'y'
+TOGGLE_MUTE_INPUT = 'y'
 
 # PATH CONSTANTS - using absolute values
 script_directory = os.path.dirname(os.path.abspath(__file__))
