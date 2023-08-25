@@ -122,6 +122,7 @@ class KeyPressSimulator:
             if request is None:
                 continue
             if request == "theme_song":
+                print("*** SOUND REQUEST QUEUE ***: ", self.sound_request_queue)
                 print("PLAYING THEME SONG:")
                 print("MUTING SONG...")
                 self.toggle_mute()

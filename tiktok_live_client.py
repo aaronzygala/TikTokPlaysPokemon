@@ -1,4 +1,4 @@
-# tiktok_live_client.py
+ # tiktok_live_client.py
 from TikTokLive import TikTokLiveClient
 from TikTokLive.types.events import CommentEvent, ConnectEvent, GiftEvent
 from PIL import Image
@@ -36,7 +36,7 @@ class TikTokLiveManager:
         self.recent_comments = []
         self.client.on("connect")(self.on_connect)
         self.client.add_listener("comment", self.on_comment)
-        self.client.on("gift")(self.on_gift)
+        self.client.add_listener("gift", self.on_gift)
         self.mode = MODE
         self.init_images()
         self.admin_list = self.read_lines(constants.ADMIN_PATH)

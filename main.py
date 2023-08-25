@@ -5,8 +5,6 @@ import key_press_simulator
 import queue
 
 
-# import backend
-
 def main():
     MODE = [constants.DEFAULT_MODE]
     # Create a queue for key press batching
@@ -16,8 +14,6 @@ def main():
     key_simulator = key_press_simulator.KeyPressSimulator("mGBA", key_press_queue, sound_request_queue, MODE=MODE)
     live_manager = tiktok_live_client.TikTokLiveManager("@baz4k", key_press_queue, sound_request_queue, MODE=MODE)
 
-    # Pass the live_manager to the backend
-    # backend.live_manager = live_manager
     try:
         # Start the key press simulator thread
         key_simulator.start()
