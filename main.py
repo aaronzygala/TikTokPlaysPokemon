@@ -3,6 +3,8 @@ import constants
 import tiktok_live_client
 import key_press_simulator
 import queue
+
+
 # import backend
 
 def main():
@@ -24,7 +26,7 @@ def main():
         live_manager.run()
 
     finally:
-    #     # Stop the key press simulator thread
+        # Stop the key press simulator thread
         key_simulator.stop()
 
 
