@@ -124,7 +124,7 @@ class KeyPressSimulator:
             if request == "theme_song":
                 print("*** SOUND REQUEST QUEUE ***: ", self.sound_request_queue)
                 print("PLAYING THEME SONG:")
-                print("MUTING SONG...")
+                print("MUTING THE GAME...")
                 self.toggle_mute()
                 # Play the sound
                 playsound(constants.THEME_SONG)
@@ -132,7 +132,7 @@ class KeyPressSimulator:
 
                 # Wait for the sound to finish playing
                 # time.sleep(constants.THEME_SONG_DURATION_SECONDS)
-                print("UN-MUTING SONG...")
+                print("UN-MUTING THE GAME...")
                 self.toggle_mute()
             # Add more conditions for handling other sound requests
 

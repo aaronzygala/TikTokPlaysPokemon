@@ -5,6 +5,7 @@ from PIL import Image
 import constants
 import os
 import random
+import time
 
 
 class TikTokLiveManager:
@@ -171,7 +172,8 @@ class TikTokLiveManager:
             self.ban_votes_per_user[username] = 1
 
     async def on_gift(self, event: GiftEvent):
-        if event.gift.id in self.processed_gifts:
+        unique_identifier = self.create_unique_identifier(event)
+        if unique_identifier in self.processed_gifts:
             return
         print(f"{event.user.nickname} sent \"{event.gift.info.name}\"")
         if "Pizza" in event.gift.info.name:
@@ -183,7 +185,12 @@ class TikTokLiveManager:
         if "Rose" in event.gift.info.name:
             self.randomize_buddy()
 
-        self.processed_gifts.add(event.gift.id)
+        self.processed_gifts.add(unique_identifier)
+
+    def create_unique_identifier(self, event: GiftEvent):
+        # Combine attributes to create a unique identifier
+        identifier = f"{event.user.unique_id}_{event.gift.id}_{time.strftime('%Y,%m,%d,%H,%M,%S')}"
+        return identifier
 
     def toggle_mode(self):
         print("TOGGLING GAME MODE...")
