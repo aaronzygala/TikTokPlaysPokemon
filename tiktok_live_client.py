@@ -179,13 +179,14 @@ class TikTokLiveManager:
             if current_time - self.processed_gifts[unique_identifier] <= 5:
                 return
         print(f"{event.user.nickname} sent \"{event.gift.info.name}\"")
-        if "Pizza" in event.gift.info.name:
+
+        if "Pizza" in event.gift.info.name and constants.ORDER_MODE_AVAILABLE:
             self.toggle_mode()
 
-        if "Enjoy Music" in event.gift.info.name:
+        if "Enjoy Music" in event.gift.info.name and constants.THEME_SONG_AVAILABLE:
             self.play_theme_song()
 
-        if "Rose" in event.gift.info.name:
+        if "Rose" in event.gift.info.name and constants.BUDDY_AVAILABLE:
             self.randomize_buddy()
 
         self.processed_gifts[unique_identifier] = current_time

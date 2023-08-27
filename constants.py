@@ -12,6 +12,12 @@ command_to_key_mapping = {
     "select": 'o',
     "start": 'p',
 }
+
+EMULATOR_WINDOW = "mGBA"
+ORDER_MODE_AVAILABLE = True
+THEME_SONG_AVAILABLE = True
+BUDDY_AVAILABLE = True
+
 # Number of whitelist votes needed to ban a user
 VOTE_BAN_MINIMUM = 5
 
