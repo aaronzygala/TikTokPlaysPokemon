@@ -14,6 +14,7 @@ command_to_key_mapping = {
 }
 
 EMULATOR_WINDOW = "mGBA"
+TIKTOK_USERNAME = "@baz4k"
 ORDER_MODE_AVAILABLE = True
 THEME_SONG_AVAILABLE = True
 BUDDY_AVAILABLE = True
