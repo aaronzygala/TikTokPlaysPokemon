@@ -3,6 +3,7 @@ from TikTokLive import TikTokLiveClient
 from TikTokLive.types.events import CommentEvent, ConnectEvent, GiftEvent
 from PIL import Image
 import constants
+import path_constants
 import os
 import random
 import time
@@ -40,20 +41,20 @@ class TikTokLiveManager:
         self.client.add_listener("gift", self.on_gift)
         self.mode = MODE
         self.init_images()
-        self.admin_list = self.read_lines(constants.ADMIN_PATH)
-        self.whitelist = self.read_lines(constants.WHITELIST_PATH)
+        self.admin_list = self.read_lines(path_constants.ADMIN_PATH)
+        self.whitelist = self.read_lines(path_constants.WHITELIST_PATH)
         self.ban_votes_per_user = {}
-        self.banned_list = self.read_lines(constants.BANNED_PATH)
+        self.banned_list = self.read_lines(path_constants.BANNED_PATH)
         self.sound_request_queue = sound_request_queue
         self.processed_gifts = {}
 
     def init_images(self):
-        chaos_image = Image.open(constants.CHAOS_IMAGE)
-        chaos_image.save(constants.CURRENT_MODE_IMAGE)
+        chaos_image = Image.open(path_constants.CHAOS_IMAGE)
+        chaos_image.save(path_constants.CURRENT_MODE_IMAGE)
         chaos_image.close()
 
-        buddy_image = Image.open(constants.DEFAULT_BUDDY_IMAGE)
-        buddy_image.save(constants.CURRENT_BUDDY_IMAGE)
+        buddy_image = Image.open(path_constants.DEFAULT_BUDDY_IMAGE)
+        buddy_image.save(path_constants.CURRENT_BUDDY_IMAGE)
         buddy_image.close()
 
     def read_lines(self, filename):
@@ -129,12 +130,12 @@ class TikTokLiveManager:
     def whitelist_user(self, username):
         print("WHITELISTING A USER: " + username)
         self.whitelist.append(username)
-        self.add_to_file(constants.WHITELIST_PATH, username)
+        self.add_to_file(path_constants.WHITELIST_PATH, username)
 
     def remove_from_whitelist(self, username):
         print("REMOVING A USER FROM WHITELIST: " + username)
         self.whitelist.remove(username)
-        self.rewrite_file(constants.WHITELIST_PATH, self.whitelist)
+        self.rewrite_file(path_constants.WHITELIST_PATH, self.whitelist)
 
     def ban_user(self, username_to_ban, username_of_caller):
         if username_to_ban in self.admin_list:
@@ -144,18 +145,18 @@ class TikTokLiveManager:
         if username_of_caller in self.admin_list:
             if username_to_ban in self.whitelist:
                 self.whitelist.remove(username_to_ban)
-                self.rewrite_file(constants.WHITELIST_PATH, self.whitelist)
+                self.rewrite_file(path_constants.WHITELIST_PATH, self.whitelist)
             self.banned_list.append(username_to_ban)
-            self.add_to_file(constants.BANNED_PATH, username_to_ban)
+            self.add_to_file(path_constants.BANNED_PATH, username_to_ban)
         elif username_of_caller in self.whitelist:
             if username_to_ban in self.whitelist:
                 print("Whitelisted users are not allowed to ban other whitelisted users.")
             else:
                 self.add_ban_vote(username_to_ban)
                 vote_count = self.get_ban_vote_count(username_to_ban)
-                if vote_count >= constants.VOTE_BAN_MINIMUM:
+                if vote_count >= path_constants.VOTE_BAN_MINIMUM:
                     self.banned_list.append(username_to_ban)
-                    self.add_to_file(constants.BANNED_PATH, username_to_ban)
+                    self.add_to_file(path_constants.BANNED_PATH, username_to_ban)
                     del self.ban_votes_per_user[username_to_ban]
                 else:
                     print(f"{constants.VOTE_BAN_MINIMUM - vote_count} more votes are needed to ban {username_to_ban}.")
@@ -180,13 +181,13 @@ class TikTokLiveManager:
                 return
         print(f"{event.user.nickname} sent \"{event.gift.info.name}\"")
 
-        if "Pizza" in event.gift.info.name and constants.ORDER_MODE_AVAILABLE:
+        if constants.ORDER_MODE_GIFT in event.gift.info.name and constants.ORDER_MODE_AVAILABLE:
             self.toggle_mode()
 
-        if "Enjoy Music" in event.gift.info.name and constants.THEME_SONG_AVAILABLE:
+        if constants.THEME_SONG_GIFT in event.gift.info.name and constants.THEME_SONG_AVAILABLE:
             self.play_theme_song()
 
-        if "Rose" in event.gift.info.name and constants.BUDDY_AVAILABLE:
+        if constants.BUDDY_GIFT in event.gift.info.name and constants.BUDDY_AVAILABLE:
             self.randomize_buddy()
 
         self.processed_gifts[unique_identifier] = current_time
@@ -210,22 +211,22 @@ class TikTokLiveManager:
         print("TOGGLING GAME MODE...")
         if self.mode[0] == "ORDER":
             self.mode[0] = "CHAOS"
-            new_mode_file = constants.CHAOS_IMAGE
+            new_mode_file = path_constants.CHAOS_IMAGE
         else:
             self.mode[0] = "ORDER"
-            new_mode_file = constants.ORDER_IMAGE
+            new_mode_file = path_constants.ORDER_IMAGE
 
         new_mode_image = Image.open(new_mode_file)
-        new_mode_image.save(constants.CURRENT_MODE_IMAGE)
+        new_mode_image.save(path_constants.CURRENT_MODE_IMAGE)
         new_mode_image.close()
         print(f"Game mode is now: {self.mode[0]}")
 
     def randomize_buddy(self):
         print("RANDOMIZING BUDDY...")
-        new_buddy_file = random.choice(os.listdir(constants.POKEMON_DIRECTORY))
+        new_buddy_file = random.choice(os.listdir(path_constants.POKEMON_DIRECTORY))
         print("new_buddy_file: " + new_buddy_file)
-        new_buddy_image = Image.open(os.path.join(constants.POKEMON_DIRECTORY, new_buddy_file))
-        new_buddy_image.save(constants.CURRENT_BUDDY_IMAGE)
+        new_buddy_image = Image.open(os.path.join(path_constants.POKEMON_DIRECTORY, new_buddy_file))
+        new_buddy_image.save(path_constants.CURRENT_BUDDY_IMAGE)
         new_buddy_image.close()
 
     def play_theme_song(self):

@@ -1,7 +1,4 @@
 # constants.py
-import os
-
-
 command_to_key_mapping = {
     "up": 'up',
     "down": 'down',
@@ -13,11 +10,21 @@ command_to_key_mapping = {
     "start": 'p',
 }
 
+# The name of the window you are running Pokemon on
 EMULATOR_WINDOW = "mGBA"
+
+# Your TikTok username where you will be livestreaming
 TIKTOK_USERNAME = "@baz4k"
+
+# Toggle the gift features
 ORDER_MODE_AVAILABLE = True
 THEME_SONG_AVAILABLE = True
 BUDDY_AVAILABLE = True
+
+# Change the gifts that trigger gift features
+ORDER_MODE_GIFT = "Pizza"
+THEME_SONG_GIFT = "Enjoy Music"
+BUDDY_GIFT = "Rose"
 
 # Number of whitelist votes needed to ban a user
 VOTE_BAN_MINIMUM = 5
@@ -37,16 +44,3 @@ THEME_SONG_DURATION_SECONDS = 197
 # Inputs to mute/unmute
 TOGGLE_MUTE_INPUT = 'y'
 
-# PATH CONSTANTS - using absolute values
-script_directory = os.path.dirname(os.path.abspath(__file__))
-CHAOS_IMAGE = os.path.join(script_directory, "OBS_Files", "Chaos.png")
-ORDER_IMAGE = os.path.join(script_directory, "OBS_Files", "Order.png")
-CURRENT_MODE_IMAGE = os.path.join(script_directory, "OBS_Files", "CurrentMode.png")
-CURRENT_BUDDY_IMAGE = os.path.join(script_directory, "OBS_Files", "CurrentBuddy.png")
-POKEMON_DIRECTORY = os.path.join(script_directory, "assets", "Pokemon")
-DEFAULT_BUDDY_IMAGE = os.path.join(POKEMON_DIRECTORY, "pikachu.png")
-THEME_SONG = os.path.join(script_directory, "assets", "Pokemon.mp3")
-
-WHITELIST_PATH = os.path.join(script_directory, "users", "whitelist.txt")
-ADMIN_PATH = os.path.join(script_directory, "users", "admin.txt")
-BANNED_PATH = os.path.join(script_directory, "users", "banned.txt")

@@ -2,6 +2,7 @@
 import pydirectinput
 import threading
 import time
+import path_constants
 import constants
 import pygetwindow as gw
 from playsound import playsound
@@ -126,7 +127,7 @@ class KeyPressSimulator:
                 print("MUTING THE GAME...")
                 self.toggle_mute()
                 # Play the sound
-                playsound(constants.THEME_SONG)
+                playsound(path_constants.THEME_SONG)
                 print("THEME SONG COMPLETE")
 
                 # Wait for the sound to finish playing
