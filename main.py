@@ -3,7 +3,7 @@ import constants
 import tiktok_live_client
 import key_press_simulator
 import queue
-
+import backend
 
 def main():
     MODE = [constants.DEFAULT_MODE]
@@ -13,7 +13,7 @@ def main():
     # Create instances of TikTokLiveManager and KeyPressSimulator
     key_simulator = key_press_simulator.KeyPressSimulator(constants.EMULATOR_WINDOW, key_press_queue, sound_request_queue, MODE=MODE)
     live_manager = tiktok_live_client.TikTokLiveManager(constants.TIKTOK_USERNAME, key_press_queue, sound_request_queue, MODE=MODE)
-
+    backend.live_manager = live_manager
     try:
         # Start the key press simulator thread
         key_simulator.start()
@@ -27,5 +27,5 @@ def main():
 
 
 if __name__ == '__main__':
-    # backend.run_flask_thread()
+    backend.run_flask_thread()
     main()

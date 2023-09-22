@@ -1,6 +1,6 @@
  # tiktok_live_client.py
 from TikTokLive import TikTokLiveClient
-from TikTokLive.types.events import CommentEvent, ConnectEvent, GiftEvent
+from TikTokLive.types.events import CommentEvent, ConnectEvent, GiftEvent, ViewerUpdateEvent, FollowEvent
 from PIL import Image
 import constants
 import path_constants
@@ -36,9 +36,12 @@ class TikTokLiveManager:
         )
         self.key_press_queue = key_press_queue
         self.recent_comments = []
-        self.client.on("connect")(self.on_connect)
+        self.client.add_listener("connect", self.on_connect)
         self.client.add_listener("comment", self.on_comment)
         self.client.add_listener("gift", self.on_gift)
+        self.client.add_listener("viewer_update", self.on_viewer_update)
+        self.client.add_listener("follow", self.on_follow)
+
         self.mode = MODE
         self.init_images()
         self.admin_list = self.read_lines(path_constants.ADMIN_PATH)
@@ -47,6 +50,9 @@ class TikTokLiveManager:
         self.banned_list = self.read_lines(path_constants.BANNED_PATH)
         self.sound_request_queue = sound_request_queue
         self.processed_gifts = {}
+        self.comment_count = 0
+        self.follower_count = 0
+        self.viewer_count = 0
 
     def init_images(self):
         chaos_image = Image.open(path_constants.CHAOS_IMAGE)
@@ -72,9 +78,9 @@ class TikTokLiveManager:
 
     async def on_comment(self, event: CommentEvent):
         print(f"{event.user.nickname}: {event.comment}")
-
         if event.comment is None:
             return  # Ignore comments with None content
+        self.comment_count += 1
 
         # Check if the comment is a whitelisting command and user is in admin_list
         if event.comment.startswith("!whitelist") and event.user.unique_id in self.admin_list:
@@ -127,6 +133,16 @@ class TikTokLiveManager:
         with open(file_path, "w") as whitelist_file:
             for string in rewrite_list:
                 whitelist_file.write(string + "\n")
+
+    def admin_user(self, username):
+        print("ADMINNING A USER: " + username)
+        self.admin_list.append(username)
+        self.add_to_file(path_constants.ADMIN_PATH, username)
+
+    def remove_from_admin(self, username):
+        print("REMOVING A USER FROM ADMINS: " + username)
+        self.admin_list.remove(username)
+        self.rewrite_file(path_constants.ADMIN_PATH, self.admin_list)
     def whitelist_user(self, username):
         print("WHITELISTING A USER: " + username)
         self.whitelist.append(username)
@@ -162,6 +178,11 @@ class TikTokLiveManager:
                     print(f"{constants.VOTE_BAN_MINIMUM - vote_count} more votes are needed to ban {username_to_ban}.")
         else:
             print("Only admins or whitelisted users are allowed to ban users.")
+
+    def remove_from_banned_list(self, username):
+        print("REMOVING A USER FROM BANNED LIST: " + username)
+        self.banned_list.remove(username)
+        self.rewrite_file(path_constants.BANNED_PATH, self.banned_list)
 
     def get_ban_vote_count(self, username):
         return self.ban_votes_per_user[username]
@@ -220,6 +241,7 @@ class TikTokLiveManager:
         new_mode_image.save(path_constants.CURRENT_MODE_IMAGE)
         new_mode_image.close()
         print(f"Game mode is now: {self.mode[0]}")
+        return self.mode[0]
 
     def randomize_buddy(self):
         print("RANDOMIZING BUDDY...")
@@ -232,3 +254,21 @@ class TikTokLiveManager:
     def play_theme_song(self):
         print("PLAYING ANIME THEME SONG...")
         self.sound_request_queue.put("theme_song")
+
+    def get_comment_count(self):
+        return self.comment_count
+
+    async def on_viewer_update(self, event: ViewerUpdateEvent):
+        print("Viewer Count Updated! New Viewer Count: ", event.viewer_count)
+        self.viewer_count += event.viewer_count
+    def get_viewer_count(self):
+        return self.viewer_count
+
+    async def on_follow(self, event: FollowEvent):
+        print(f"@{event.user.unique_id} followed you!")
+        self.follower_count += 1
+
+    def get_follow_count(self):
+        return self.follower_count
+
+
