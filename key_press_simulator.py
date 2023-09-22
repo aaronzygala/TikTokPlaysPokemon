@@ -1,11 +1,11 @@
 # key_press_simulator.py
-# import pydirectinput
+import pydirectinput
 import threading
 import time
 import path_constants
 import constants
-# import pygetwindow as gw
-# from playsound import playsound
+import pygetwindow as gw
+from playsound import playsound
 
 class KeyPressSimulator:
     """
@@ -32,20 +32,20 @@ class KeyPressSimulator:
     """
     def __init__(self, emulator_window_title, key_press_queue, sound_request_queue, MODE):
         # Find the emulator window using partial title match
-        # emulator_windows = gw.getWindowsWithTitle(emulator_window_title)
-        # self.emulator_window = emulator_windows[0] if emulator_windows else None
-        # if self.emulator_window:
-        #     self.emulator_window.activate()  # Activating the window
-        # else:
-        #     print("Emulator window not found.")
-        #
-        # tiktok_live_studio_windows = gw.getWindowsWithTitle("TikTok")
-        # self.tiktok_live_studio_window = tiktok_live_studio_windows[0] if tiktok_live_studio_windows else None
-        # if self.tiktok_live_studio_window:
-        #     self.tiktok_live_studio_window.activate()  # Activating the window
-        # else:
-        #     print("TikTokLive Studio window not found.")
-        # self.tiktok_focus_timer = constants.TIKTOK_FOCUS_TIMER # number of minutes to focus the window and press spacebar
+        emulator_windows = gw.getWindowsWithTitle(emulator_window_title)
+        self.emulator_window = emulator_windows[0] if emulator_windows else None
+        if self.emulator_window:
+            self.emulator_window.activate()  # Activating the window
+        else:
+            print("Emulator window not found.")
+
+        tiktok_live_studio_windows = gw.getWindowsWithTitle("TikTok")
+        self.tiktok_live_studio_window = tiktok_live_studio_windows[0] if tiktok_live_studio_windows else None
+        if self.tiktok_live_studio_window:
+            self.tiktok_live_studio_window.activate()  # Activating the window
+        else:
+            print("TikTokLive Studio window not found.")
+        self.tiktok_focus_timer = constants.TIKTOK_FOCUS_TIMER # number of minutes to focus the window and press spacebar
 
         self.key_press_queue = key_press_queue
         self.sound_request_queue = sound_request_queue
@@ -53,34 +53,34 @@ class KeyPressSimulator:
         self.vote_interval = constants.VOTE_INTERVAL
         self.last_vote_time = time.time()
         self.key_press_thread = threading.Thread(target=self.simulate_key_presses)
-        # self.focus_tiktok_studio_thread = threading.Thread(target=self.focus_tiktok_with_timer)
+        self.focus_tiktok_studio_thread = threading.Thread(target=self.focus_tiktok_with_timer)
         self.sound_request_thread = threading.Thread(target=self.process_sound_requests)
         self.mode = MODE
 
         self.emulator_window_lock = threading.Lock()  # Create a lock for self.emulator_window
         self.votes_lock = threading.Lock()  # Create a lock for accessing self.votes
 
-    # def focus_tiktok_with_timer(self):
-    #     try:
-    #         while True:
-    #             if self.tiktok_live_studio_window:
-    #                 self.tiktok_live_studio_window.activate()
-    #                 pydirectinput.press('space')
-    #             time.sleep(self.tiktok_focus_timer * 60)
-    #     except gw.PyGetWindowException as e:
-    #         print("An exception occurred:", e)
-    #         pass  # Continue execution
+    def focus_tiktok_with_timer(self):
+        try:
+            while True:
+                if self.tiktok_live_studio_window:
+                    self.tiktok_live_studio_window.activate()
+                    pydirectinput.press('space')
+                time.sleep(self.tiktok_focus_timer * 60)
+        except gw.PyGetWindowException as e:
+            print("An exception occurred:", e)
+            pass  # Continue execution
 
     def start(self):
         self.key_press_thread.start()
-        # self.focus_tiktok_studio_thread.start()
+        self.focus_tiktok_studio_thread.start()
         self.sound_request_thread.start()  # Start the sound request processing thread
 
     def stop(self):
         self.key_press_queue.put(None)
         self.sound_request_queue.put(None)
         self.key_press_thread.join()
-        # self.focus_tiktok_studio_thread.join()
+        self.focus_tiktok_studio_thread.join()
         self.sound_request_thread.join()
 
     def simulate_key_presses(self):
@@ -106,9 +106,9 @@ class KeyPressSimulator:
 
     def press(self, command):
         with self.emulator_window_lock:
-            # self.emulator_window.activate()  # Activating the window
+            self.emulator_window.activate()  # Activating the window
             print("Command registered: ", command)
-            # pydirectinput.press(command, interval=0.2)
+            pydirectinput.press(command, interval=0.2)
 
     def collect_vote(self, command):
         with self.votes_lock:
@@ -127,11 +127,11 @@ class KeyPressSimulator:
                 print("MUTING THE GAME...")
                 self.toggle_mute()
                 # Play the sound
-                # playsound(path_constants.THEME_SONG)
+                playsound(path_constants.THEME_SONG)
                 print("THEME SONG COMPLETE")
 
                 # Wait for the sound to finish playing
-                # time.sleep(constants.THEME_SONG_DURATION_SECONDS)
+                time.sleep(constants.THEME_SONG_DURATION_SECONDS)
                 print("UN-MUTING THE GAME...")
                 self.toggle_mute()
             # Add more conditions for handling other sound requests
