@@ -8,6 +8,10 @@ command_to_key_mapping = {
     "bb": 'b',
     "select": 'o',
     "start": 'p',
+    "save": 's',
+    "load": 'l',
+    "ll": 'l',
+    "rr": 'r',
 }
 
 # The name of the window you are running Pokemon on
