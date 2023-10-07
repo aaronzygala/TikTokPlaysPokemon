@@ -1,7 +1,9 @@
 from flask import Flask, jsonify, request, abort
 import math
 import logging
-from threading import Thread
+from werkzeug.serving import make_server
+import threading
+
 logging.basicConfig(level=logging.DEBUG, filename="output.log")  # Set the desired log level
 
 ADMIN_USER = {
@@ -9,6 +11,7 @@ ADMIN_USER = {
     'password': 'password'
 }
 app = Flask(__name__)
+app.json.sort_keys = False
 # app.config['SECRET_KEY'] = "skM0gRq7zxJyaLQkApKyi49d2x9Uq8Ug"
 
 @app.route('/api/login', methods=['POST'])
@@ -172,7 +175,7 @@ def get_statistic(stat_name):
         elif stat_name == "comments":
             stat = live_manager.get_comment_count()
         else:
-            stat = live_manager.get_viewer_count()
+            stat = live_manager.get_gift_count()
         # Create a dictionary containing recent comments and maxPages
         data = {
             'stat': stat,
@@ -192,17 +195,90 @@ def get_comments():
     data, status_code = get_statistic('comments')
     return data, status_code
 
-@app.route('/api/viewers', methods=['GET'])
-def get_viewers():
-    data, status_code = get_statistic('viewers')
+@app.route('/api/gifts', methods=['GET'])
+def get_gifts():
+    data, status_code = get_statistic('gifts')
     return data, status_code
 
-def run_flask_app():
-    app.run(debug=True, port=5002, use_reloader=False)
-def run_flask_thread():
-    flask_thread = Thread(target=run_flask_app)
-    flask_thread.start()
+restart = False
+@app.route('/api/restart', methods=['POST'])
+def set_restart():
+    global restart
+    restart = True
+    return jsonify({'status': 'Restart set'})
 
-if __name__ == '__main__':
-    run_flask_app()
+def read_constants_from_file(file_path):
+    result = {}
+
+    with open(file_path, 'r') as file:
+        code = compile(file.read(), file_path, 'exec')
+        exec(code, result)
+
+    # Filter out variables that start with '__' (dunder/magic variables)
+    result = {name: value for name, value in result.items() if not name.startswith('__')}
+
+    return result
+
+# Example usage
+constants_file_path = 'constants.py'
+constants_dict = read_constants_from_file(constants_file_path)
+# Create a dictionary from the module attributes
+
+@app.route('/api/constants', methods=['GET'])
+def get_constants():
+    formatted_constants = {}
+
+    for name, value in constants_dict.items():
+        # Determine the type of the constant
+        data_type = str(type(value).__name__)
+        formatted_constants[name] = {'value': value, 'type': data_type}
+
+    return jsonify({'constants': formatted_constants})
+
+@app.route('/api/save-constants', methods=['POST'])
+def save_constants():
+    try:
+        data = request.get_json()
+        new_constants = data.get('constants', {})
+
+        # Update constants dictionary
+        constants_dict.update(new_constants)
+
+        # Write the constants to the file (you need to implement this)
+        write_constants_to_file(constants_dict)
+
+        return jsonify({'message': 'Constants saved successfully'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+def write_constants_to_file(new_constants):
+    # Implement the logic to write constants to the file
+    # For simplicity, let's assume constants are written to a Python file directly
+    with open('constants.py', 'w') as file:
+        file.write("# constants.py\n\n")
+        for key, value in new_constants.items():
+            file.write(f"{key} = {repr(value['value'])}\n")
+
+class ServerThread(threading.Thread):
+    def __init__(self, app):
+        threading.Thread.__init__(self)
+        self.server = make_server('localhost', 5002, app)
+        self.ctx = app.app_context()
+        self.ctx.push()
+    def run(self):
+        self.server.serve_forever()
+    def shutdown(self):
+        self.server.shutdown()
+
+
+# noinspection PyPackageRequirements
+def start_server():
+    global server
+    # App routes defined here
+    server = ServerThread(app)
+    server.start()
+
+def stop_server():
+    global server
+    server.shutdown()
 

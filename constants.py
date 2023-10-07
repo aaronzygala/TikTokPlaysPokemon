@@ -1,50 +1,18 @@
 # constants.py
-command_to_key_mapping = {
-    "up": 'up',
-    "down": 'down',
-    "left": 'left',
-    "right": 'right',
-    "aa": 'a',
-    "bb": 'b',
-    "select": 'o',
-    "start": 'p',
-    "save": 's',
-    "load": 'l',
-    "ll": 'l',
-    "rr": 'r',
-}
 
-# The name of the window you are running Pokemon on
-EMULATOR_WINDOW = "mGBA"
-
-# Your TikTok username where you will be livestreaming
-TIKTOK_USERNAME = "@baz4k"
-
-# Toggle the gift features
+command_to_key_mapping = {'aa': 'a', 'bb': 'b', 'down': 'down', 'left': 'left', 'll': 'l', 'load': 'l', 'right': 'right', 'rr': 'r', 'save': 's', 'select': 'o', 'start': 'p', 'up': 'up'}
+EMULATOR_WINDOW = 'mGBA'
+TIKTOK_USERNAME = '@baz4k'
 ORDER_MODE_AVAILABLE = True
 THEME_SONG_AVAILABLE = True
 BUDDY_AVAILABLE = True
-
-# Change the gifts that trigger gift features
-ORDER_MODE_GIFT = "Pizza"
-THEME_SONG_GIFT = "Enjoy Music"
-BUDDY_GIFT = "Rose"
-
-# Number of whitelist votes needed to ban a user
+ORDER_MODE_GIFT = 'Pizza'
+THEME_SONG_GIFT = 'Enjoy Music'
+BUDDY_GIFT = 'Rose'
 VOTE_BAN_MINIMUM = 5
-
-# The number of MINUTES for the timer to re-focus the TikTok Live Studio app
-TIKTOK_FOCUS_TIMER = 30.0
-
-# The default mode of the program
-DEFAULT_MODE = "CHAOS"
-
-# Number of seconds for each vote in Order mode
-VOTE_INTERVAL = 10.0
-
-# Number of seconds in theme song in SECONDS
+TIKTOK_FOCUS_TIMER = 30
+TOGGLE_SCRIPT_TIMER = 30
+DEFAULT_MODE = 'CHAOS'
+VOTE_INTERVAL = 10
 THEME_SONG_DURATION_SECONDS = 197
-
-# Inputs to mute/unmute
 TOGGLE_MUTE_INPUT = 'y'
-

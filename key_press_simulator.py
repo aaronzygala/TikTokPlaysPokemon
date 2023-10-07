@@ -53,6 +53,8 @@ class KeyPressSimulator:
         self.vote_interval = constants.VOTE_INTERVAL
         self.last_vote_time = time.time()
         self.key_press_thread = threading.Thread(target=self.simulate_key_presses)
+        self.exit_event = threading.Event()  # Event to signal the thread to exit
+
         self.focus_tiktok_studio_thread = threading.Thread(target=self.focus_tiktok_with_timer)
         self.sound_request_thread = threading.Thread(target=self.process_sound_requests)
         self.mode = MODE
@@ -77,6 +79,7 @@ class KeyPressSimulator:
         self.sound_request_thread.start()  # Start the sound request processing thread
 
     def stop(self):
+        self.exit_event.set()
         self.key_press_queue.put(None)
         self.sound_request_queue.put(None)
         self.key_press_thread.join()
@@ -84,7 +87,7 @@ class KeyPressSimulator:
         self.sound_request_thread.join()
 
     def simulate_key_presses(self):
-        while True:
+        while not self.exit_event.is_set():
             commands_to_press = self.key_press_queue.get()
             if commands_to_press is None:
                 continue
@@ -118,7 +121,7 @@ class KeyPressSimulator:
                 self.votes[command[0]] = 1
 
     def process_sound_requests(self):
-        while True:
+        while not self.exit_event.is_set():
             request = self.sound_request_queue.get()
             if request is None:
                 continue

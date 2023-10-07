@@ -39,7 +39,6 @@ class TikTokLiveManager:
         self.client.add_listener("connect", self.on_connect)
         self.client.add_listener("comment", self.on_comment)
         self.client.add_listener("gift", self.on_gift)
-        self.client.add_listener("viewer_update", self.on_viewer_update)
         self.client.add_listener("follow", self.on_follow)
 
         self.mode = MODE
@@ -52,7 +51,7 @@ class TikTokLiveManager:
         self.processed_gifts = {}
         self.comment_count = 0
         self.follower_count = 0
-        self.viewer_count = 0
+        self.gift_count = 0
 
     def init_images(self):
         chaos_image = Image.open(path_constants.CHAOS_IMAGE)
@@ -69,6 +68,9 @@ class TikTokLiveManager:
 
     def run(self):
         self.client.run()
+
+    def stop(self):
+        self.client.stop()
 
     def get_recent_comments(self):
         return self.recent_comments
@@ -194,6 +196,7 @@ class TikTokLiveManager:
             self.ban_votes_per_user[username] = 1
 
     async def on_gift(self, event: GiftEvent):
+        self.gift_count += 1
         unique_identifier = self.create_unique_identifier(event)
         current_time = time.time()
 
@@ -257,12 +260,8 @@ class TikTokLiveManager:
 
     def get_comment_count(self):
         return self.comment_count
-
-    async def on_viewer_update(self, event: ViewerUpdateEvent):
-        print("Viewer Count Updated! New Viewer Count: ", event.viewer_count)
-        self.viewer_count += event.viewer_count
-    def get_viewer_count(self):
-        return self.viewer_count
+    def get_gift_count(self):
+        return self.gift_count
 
     async def on_follow(self, event: FollowEvent):
         print(f"@{event.user.unique_id} followed you!")
