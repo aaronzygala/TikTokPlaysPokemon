@@ -244,7 +244,12 @@ def write_constants_to_file(new_constants):
     with open('constants.py', 'w') as file:
         file.write("# constants.py\n\n")
         for key, value in new_constants.items():
-            file.write(f"{key} = {repr(value['value'])}\n")
+            if value['type'] == 'int':
+                file.write(f"{key} = {int(value['value'])}\n")
+            elif value['type'] == 'bool':
+                file.write(f"{key} = {bool(value['value'])}\n")
+            else:
+                file.write(f"{key} = {repr(value['value'])}\n")
 
 class ServerThread(threading.Thread):
     def __init__(self, app):
