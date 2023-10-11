@@ -14,22 +14,22 @@ app = Flask(__name__)
 app.json.sort_keys = False
 # app.config['SECRET_KEY'] = "skM0gRq7zxJyaLQkApKyi49d2x9Uq8Ug"
 
-@app.route('/api/login', methods=['POST'])
-def login():
-    app.logger.debug("Received login request")
-
-    # Logging request data
-    app.logger.debug(f"Request form data: {request}")
-    data = request.json
-    submitted_username = data.get('username')
-    submitted_password = data.get('password')
-    app.logger.debug(f"Submitted username: {submitted_username}")
-    app.logger.debug(f"Submitted password: {submitted_password}")
-    if submitted_username == ADMIN_USER['username'] and submitted_password == ADMIN_USER['password']:
-        response = jsonify({'message': 'Login successful'})
-        return response
-    else:
-        return abort(401)
+# @app.route('/api/login', methods=['POST'])
+# def login():
+#     app.logger.debug("Received login request")
+#
+#     # Logging request data
+#     app.logger.debug(f"Request form data: {request}")
+#     data = request.json
+#     submitted_username = data.get('username')
+#     submitted_password = data.get('password')
+#     app.logger.debug(f"Submitted username: {submitted_username}")
+#     app.logger.debug(f"Submitted password: {submitted_password}")
+#     if submitted_username == ADMIN_USER['username'] and submitted_password == ADMIN_USER['password']:
+#         response = jsonify({'message': 'Login successful'})
+#         return response
+#     else:
+#         return abort(401)
 
 # Define a global variable to hold the live_manager object
 live_manager = None
@@ -75,19 +75,11 @@ def get_names_from_file(file_path):
     except Exception as e:
         return {'error': str(e)}, 500
 
-def add_name():
-    data = request.get_json()
-    name = data.get('name')
-    if name:
-        names.append(name)
-        return jsonify({'message': 'Name added successfully'})
-    else:
-        return jsonify({'error': 'Name cannot be empty'})
-
 @app.route('/api/whitelist', methods=['GET'])
 def get_whitelist():
     data, status_code = get_names_from_file('./users/whitelist.txt')
     return jsonify(data), status_code
+
 @app.route('/api/whitelist/add', methods=['POST'])
 def add_to_whitelist():
     data = request.get_json()
@@ -97,6 +89,7 @@ def add_to_whitelist():
         return jsonify({'message': 'Name added successfully'})
     else:
         return jsonify({'error': 'Name cannot be empty'})
+
 @app.route('/api/whitelist/remove', methods=['POST'])
 def remove_from_whitelist():
     data = request.get_json()
@@ -159,7 +152,6 @@ def toggle_mode():
     if live_manager is not None:
         mode = live_manager.toggle_mode()
 
-        # Create a dictionary containing recent comments and maxPages
         data = {
             'mode': mode,
         }
@@ -176,7 +168,7 @@ def get_statistic(stat_name):
             stat = live_manager.get_comment_count()
         else:
             stat = live_manager.get_gift_count()
-        # Create a dictionary containing recent comments and maxPages
+
         data = {
             'stat': stat,
         }
@@ -219,11 +211,8 @@ def read_constants_from_file(file_path):
 
     return result
 
-# Example usage
 constants_file_path = 'constants.py'
 constants_dict = read_constants_from_file(constants_file_path)
-# Create a dictionary from the module attributes
-
 @app.route('/api/constants', methods=['GET'])
 def get_constants():
     formatted_constants = {}
@@ -244,7 +233,7 @@ def save_constants():
         # Update constants dictionary
         constants_dict.update(new_constants)
 
-        # Write the constants to the file (you need to implement this)
+        # Write the constants to the file
         write_constants_to_file(constants_dict)
 
         return jsonify({'message': 'Constants saved successfully'})
@@ -252,8 +241,6 @@ def save_constants():
         return jsonify({'error': str(e)}), 500
 
 def write_constants_to_file(new_constants):
-    # Implement the logic to write constants to the file
-    # For simplicity, let's assume constants are written to a Python file directly
     with open('constants.py', 'w') as file:
         file.write("# constants.py\n\n")
         for key, value in new_constants.items():
@@ -270,8 +257,6 @@ class ServerThread(threading.Thread):
     def shutdown(self):
         self.server.shutdown()
 
-
-# noinspection PyPackageRequirements
 def start_server():
     global server
     # App routes defined here
