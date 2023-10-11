@@ -27,9 +27,9 @@ class TikTokLiveManager:
         on_comment(event): Callback for handling comment events and sending key press commands.
     """
 
-    def __init__(self, unique_id, key_press_queue, sound_request_queue, MODE):
+    def __init__(self, key_press_queue, sound_request_queue, MODE):
         self.client = TikTokLiveClient(
-            unique_id,
+            constants.TIKTOK_USERNAME,
             # ws_ping_interval=30.0,  # Increase the interval between keepalive pings
             # ws_timeout=20.0,  # Increase the websocket timeout
             # http_timeout=20.0  # Increase the HTTP request timeout
