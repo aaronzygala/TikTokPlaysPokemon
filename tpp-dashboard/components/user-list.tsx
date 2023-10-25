@@ -53,8 +53,8 @@ export function NameList({list}): JSX.Element {
   };
   return (
     <div className="overflow-auto h-[540px]">
-      { names.map((name) => (
-        <div className="flex items-end p-4 bg-slate-900 rounded-2xl border border-solid border-stone-950">
+      { names.map((name, index) => (
+        <div key={index} className="flex items-end p-4 bg-slate-900 rounded-2xl border border-solid border-stone-950">
           <div className="flex items-center mt-auto mb-auto">
             <div className="ml-2">
               <p className="text-sm text-muted-foreground">

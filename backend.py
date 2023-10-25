@@ -213,32 +213,43 @@ def read_constants_from_file(file_path):
 
 constants_file_path = 'constants.py'
 constants_dict = read_constants_from_file(constants_file_path)
+
 @app.route('/api/constants', methods=['GET'])
 def get_constants():
-    formatted_constants = {}
+    try:
+        formatted_constants = {}
 
-    for name, value in constants_dict.items():
-        # Determine the type of the constant
-        data_type = str(type(value).__name__)
-        formatted_constants[name] = {'value': value, 'type': data_type}
+        for name, value in constants_dict.items():
+            # Determine the type of the constant
+            data_type = str(type(value).__name__)
+            formatted_constants[name] = {'value': value, 'type': data_type}
 
-    return jsonify({'constants': formatted_constants})
+        return jsonify({'constants': formatted_constants})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/save-constants', methods=['POST'])
 def save_constants():
     try:
+        global constants_dict  # Access the global constants_dict
+
         data = request.get_json()
         new_constants = data.get('constants', {})
 
-        # Update constants dictionary
-        constants_dict.update(new_constants)
+        # Write the updated constants to the file
+        write_constants_to_file(new_constants)
 
-        # Write the constants to the file
-        write_constants_to_file(constants_dict)
+        # Ensure the structure of new_constants matches the structure of constants_dict
+        for key, value in constants_dict.items():
+            if key in new_constants:
+                # Update only if the key exists in new_constants
+                new_value = new_constants[key]['value']
+                constants_dict[key] = new_value
 
         return jsonify({'message': 'Constants saved successfully'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 def write_constants_to_file(new_constants):
     with open('constants.py', 'w') as file:

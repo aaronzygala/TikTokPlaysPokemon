@@ -1,20 +1,7 @@
 # constants.py
-import win32con
 
-command_to_key_mapping = {'aa': ord('a'),
-                          'bb': ord('b'),
-                          'up': win32con.VK_UP,
-                          'down': win32con.VK_DOWN,
-                          'left': win32con.VK_LEFT,
-                          'right': win32con.VK_RIGHT,
-                          'll': ord('l'),
-                          'rr': ord('r'),
-                          'save': ord('s'),
-                          'load': ord('l'),
-                          'select': ord('o'),
-                          'start': ord('p'),
-                          }
-EMULATOR_WINDOW = 'mGBA'
+command_to_key_mapping = {'aa': 'a', 'bb': 'b', 'up': 'up', 'down': 'down', 'left': 'left', 'right': 'right', 'll': 'l', 'rr': 'r', 'save': 's', 'load': 'k', 'select': 'o', 'start': 'p'}
+EMULATOR_WINDOW = 'WAIT'
 TIKTOK_LIVE_STUDIO_WINDOW = 'TikTok LIVE Studio'
 TIKTOK_USERNAME = '@baz4k'
 ORDER_MODE_AVAILABLE = True
@@ -23,7 +10,7 @@ BUDDY_AVAILABLE = True
 ORDER_MODE_GIFT = 'Pizza'
 THEME_SONG_GIFT = 'Enjoy Music'
 BUDDY_GIFT = 'Rose'
-VOTE_BAN_MINIMUM = 5
+VOTE_BAN_MINIMUM = '50'
 TIKTOK_FOCUS_TIMER = 30
 TOGGLE_SCRIPT_TIMER = 30
 DEFAULT_MODE = 'CHAOS'
