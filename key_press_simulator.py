@@ -116,7 +116,7 @@ class KeyPressSimulator:
                 print("Command registered: ", command)
                 pydirectinput.press(command, interval=0.2)
         except gw.PyGetWindowException as e:
-            print(f"Error while activating {window_title} window: {e}")
+            print(f"Error while activating emulator window window: {e}")
             pass
 
     def collect_vote(self, command):
