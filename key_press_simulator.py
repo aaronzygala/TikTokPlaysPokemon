@@ -1,10 +1,10 @@
 # key_press_simulator.py
-# import pydirectinput
+import pydirectinput
 import threading
 import time
 import path_constants
 import constants
-# import pygetwindow as gw
+import pygetwindow as gw
 from playsound import playsound
 
 class KeyPressSimulator:
@@ -32,8 +32,8 @@ class KeyPressSimulator:
     """
     def __init__(self, key_press_queue, sound_request_queue, MODE):
         # Find the emulator window using partial title match
-        # self.emulator_window = self.find_and_activate_window(constants.EMULATOR_WINDOW)
-        # self.tiktok_live_studio_window = self.find_and_activate_window(constants.TIKTOK_LIVE_STUDIO_WINDOW)
+        self.emulator_window = self.find_and_activate_window(constants.EMULATOR_WINDOW)
+        self.tiktok_live_studio_window = self.find_and_activate_window(constants.TIKTOK_LIVE_STUDIO_WINDOW)
 
         self.key_press_queue = key_press_queue
         self.sound_request_queue = sound_request_queue
