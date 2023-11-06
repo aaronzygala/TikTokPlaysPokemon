@@ -43,7 +43,7 @@ class KeyPressSimulator:
         self.key_press_thread = threading.Thread(target=self.simulate_key_presses)
         self.exit_event = threading.Event()  # Event to signal the thread to exit
 
-        # self.focus_tiktok_studio_thread = threading.Thread(target=self.focus_tiktok_with_timer)
+        self.focus_tiktok_studio_thread = threading.Thread(target=self.focus_tiktok_with_timer)
         self.sound_request_thread = threading.Thread(target=self.process_sound_requests)
         self.mode = MODE
 
@@ -51,39 +51,34 @@ class KeyPressSimulator:
         self.votes_lock = threading.Lock()  # Create a lock for accessing self.votes
 
     def find_and_activate_window(self, window_title):
-        try:
-            windows = gw.getWindowsWithTitle(window_title)
-            if windows:
-                window = windows[0]
-                try:
-                    window.activate()
-                except:
-                    window.minimize()
-                    window.maximize()
-                return window
-            else:
-                print(f"{window_title} window not found.")
-                return None
-        except gw.PyGetWindowException as e:
-            print(f"Error while activating {window_title} window: {e}")
+        windows = gw.getWindowsWithTitle(window_title)
+        if windows:
+            window = windows[0]
+            try:
+                window.activate()
+            except gw.PyGetWindowException:
+                # print(f"Error while activating {window_title} window: {e}")
+                window.minimize()
+                window.maximize()
+            return window
+        else:
+            print(f"{window_title} window not found.")
+            return None
 
     def focus_tiktok_with_timer(self):
-        try:
-            while True:
-                if self.tiktok_live_studio_window:
-                    try:
-                        self.tiktok_live_studio_window.activate()
-                    except:
-                        self.tiktok_live_studio_window.minimize()
-                        self.tiktok_live_studio_window.maximize()
-                    pydirectinput.press('space')
-                time.sleep(constants.TIKTOK_FOCUS_TIMER * 60)
-        except gw.PyGetWindowException as e:
-            print("An exception occurred:", e)
+        while True:
+            if self.tiktok_live_studio_window:
+                try:
+                    self.tiktok_live_studio_window.activate()
+                except gw.PyGetWindowException:
+                    self.tiktok_live_studio_window.minimize()
+                    self.tiktok_live_studio_window.maximize()
+                pydirectinput.press('space')
+            time.sleep(constants.TIKTOK_FOCUS_TIMER * 60)
 
     def start(self):
         self.key_press_thread.start()
-        # self.focus_tiktok_studio_thread.start()
+        self.focus_tiktok_studio_thread.start()
         self.sound_request_thread.start()  # Start the sound request processing thread
 
     def stop(self):
@@ -91,7 +86,7 @@ class KeyPressSimulator:
         self.key_press_queue.put(None)
         self.sound_request_queue.put(None)
         self.key_press_thread.join()
-        # self.focus_tiktok_studio_thread.join()
+        self.focus_tiktok_studio_thread.join()
         self.sound_request_thread.join()
 
     def simulate_key_presses(self):
@@ -116,17 +111,14 @@ class KeyPressSimulator:
                     self.collect_vote(commands_to_press)
 
     def press(self, command):
-        try:
-            with self.emulator_window_lock:
-                try:
-                    self.emulator_window.activate()
-                except:
-                    self.emulator_window.minimize()
-                    self.emulator_window.maximize()
-                print("Command registered: ", command)
-                pydirectinput.press(command, interval=0.2)
-        except gw.PyGetWindowException as e:
-            print(f"Error while activating emulator window: {e}")
+        with self.emulator_window_lock:
+            try:
+                self.emulator_window.activate()
+            except gw.PyGetWindowException:
+                self.emulator_window.minimize()
+                self.emulator_window.maximize()
+            print("Command registered: ", command)
+            pydirectinput.press(command, interval=0.2)
 
     def collect_vote(self, command):
         with self.votes_lock:
