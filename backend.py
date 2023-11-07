@@ -3,6 +3,9 @@ import math
 import logging
 from werkzeug.serving import make_server
 import threading
+import time
+from collections import Counter
+import json
 
 logging.basicConfig(level=logging.DEBUG, filename="output.log")  # Set the desired log level
 
@@ -12,7 +15,7 @@ ADMIN_USER = {
 }
 app = Flask(__name__)
 app.json.sort_keys = False
-# app.config['SECRET_KEY'] = "skM0gRq7zxJyaLQkApKyi49d2x9Uq8Ug"
+app.config['SECRET_KEY'] = "skM0gRq7zxJyaLQkApKyi49d2x9Uq8Ug"
 
 # @app.route('/api/login', methods=['POST'])
 # def login():
@@ -61,6 +64,54 @@ def get_recent_comments():
         return jsonify(data), 200
     else:
         return jsonify([]), 200  # Return an empty response if live_manager is None
+
+
+# Create a counter to store comment counts
+comment_counts = Counter()
+timer_start_time = None
+counted_comments = set()  # Store unique comments (user and comment) counted during the timer interval
+@app.route('/api/current_vote', methods=['GET'])
+def current_vote_comments():
+    global timer_start_time
+
+    # Check if the timer has started
+    if timer_start_time is None:
+        timer_start_time = time.time()
+
+    # Calculate the time remaining in the timer (in seconds)
+    timer_remaining = max(0, 10 - int(time.time() - timer_start_time))
+
+    # Check if the timer has finished (10 seconds)
+    if timer_remaining == 0:
+        # Reset the timer start time and comment counts
+        timer_start_time = time.time()
+        comment_counts.clear()
+
+    # Get the most recent comment from live_manager
+    new_comment = live_manager.get_most_recent_comment()
+
+    if new_comment:
+        # Create a unique key (user, comment, timestamp) to identify comments
+        comment_key = (new_comment['username'], new_comment['comment'], new_comment['timestamp'])
+
+        if comment_key not in counted_comments:
+            counted_comments.add(comment_key)  # Add the comment key to the set
+            comment_counts[new_comment['comment']] += 1
+
+    # Convert comment counts to the desired format
+    labels = ['A', 'B', 'Start', 'Select', 'Up', 'Down', 'Left', 'Right']
+    data = [comment_counts[label] for label in labels]
+
+    # Create a dictionary with labels, data, and timer value
+    result = {
+        'labels': labels,
+        'data': data,
+        'timer_remaining': int(timer_remaining),  # Convert to integer for JSON
+    }
+
+    # Return the result as a JSON response
+    return jsonify(result), 200
+
 
 def get_names_from_file(file_path):
     try:

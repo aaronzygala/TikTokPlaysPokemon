@@ -36,6 +36,7 @@ class TikTokLiveManager:
         )
         self.key_press_queue = key_press_queue
         self.recent_comments = []
+        self.most_recent_comment = None
         self.client.add_listener("connect", self.on_connect)
         self.client.add_listener("comment", self.on_comment)
         self.client.add_listener("gift", self.on_gift)
@@ -74,6 +75,12 @@ class TikTokLiveManager:
 
     def get_recent_comments(self):
         return self.recent_comments
+
+    def get_most_recent_comment(self):
+        if self.most_recent_comment is not None:
+            return self.most_recent_comment
+        else:
+            return 0
 
     async def on_connect(self, _: ConnectEvent):
         print("Connected to Room ID:", self.client.room_id)
@@ -115,17 +122,21 @@ class TikTokLiveManager:
                     self.play_theme_song()
 
             if event.user.unique_id not in self.banned_list:
-                commands_triggered = [constants.command_to_key_mapping[command.lower()] for command in event.comment.split()
+                commands_triggered = [command for command in event.comment.split()
                                       if command.lower() in constants.command_to_key_mapping]
 
+                keys_to_trigger = [constants.command_to_key_mapping[command.lower()] for command in commands_triggered]
+
                 if len(commands_triggered) > 0:
-                    self.key_press_queue.put([commands_triggered[0]])
+                    self.key_press_queue.put([keys_to_trigger[0]])
                     comment_data = {
                         'avatar': event.user.avatar.urls[0],
                         'username': event.user.unique_id,
-                        'comment': commands_triggered[0]
+                        'comment': commands_triggered[0].capitalize(),
+                        'timestamp': time.time()
                     }
                     self.recent_comments.append(comment_data)  # Store the comment data
+                    self.most_recent_comment = comment_data
 
     def add_to_file(self, file_path, string_to_add):
         with open(file_path, "a") as whitelist_file:

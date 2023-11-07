@@ -66,9 +66,9 @@ export function StatisticDisplay({statName}): JSX.Element {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">+{statValue}</div>
-            <p className="text-xs text-muted-foreground">
+            {/* <p className="text-xs text-muted-foreground">
               +X% from last stream
-            </p>
+            </p> */}
           </CardContent>
         </Card>
     )

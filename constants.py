@@ -1,6 +1,17 @@
 # constants.py
 
-command_to_key_mapping = {'aa': 'a', 'bb': 'b', 'up': 'up', 'down': 'down', 'left': 'left', 'right': 'right', 'll': 'l', 'rr': 'r', 'save': 's', 'load': 'k', 'select': 'o', 'start': 'p'}
+command_to_key_mapping = {'aa': 'a',
+                          'bb': 'b',
+                          'up': 'up',
+                          'down': 'down',
+                          'left': 'left',
+                          'right': 'right',
+                          'll': 'l',
+                          'rr': 'r',
+                          'save': 's',
+                          'load': 'k',
+                          'select': 'o',
+                          'start': 'p'}
 EMULATOR_WINDOW = 'mGBA'
 TIKTOK_LIVE_STUDIO_WINDOW = 'TikTok LIVE Studio'
 TIKTOK_USERNAME = '@baz4k'

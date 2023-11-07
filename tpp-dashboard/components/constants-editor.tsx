@@ -102,7 +102,7 @@ const ConstantsEditor = () => {
   return (
     <div className="grid grid-cols-3 gap-x-4">
       <Card>
-        <CardHeader>Strings:</CardHeader>
+        <CardHeader>Text:</CardHeader>
         {stringConstants.map(([constantName, constantValue]) => (
           <CardContent key={constantName}>
             <div className="flex flex-row">

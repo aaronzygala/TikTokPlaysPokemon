@@ -6,20 +6,13 @@ import {
   } from "./ui/avatar"
 import { Button } from "./ui/button"
 import { UserPlus2, UserX2, ChevronRight, ChevronLeft, MoreHorizontal } from "lucide-react"
-import axios from "axios"; // Import axios for API requests
-
-import {
+import axios from "axios";
+import { 
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu"
 
@@ -33,7 +26,7 @@ function UserDropdownMenu(props: {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="mr-1">
+        <Button variant="ghost" className="mr-1 -ml-2">
           <MoreHorizontal className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -106,7 +99,7 @@ export function CommentList(): JSX.Element {
   return (
     <div className="overflow-auto h-[650px]">
       { recentComments.map((data, index) => (
-        <div key={index} className="flex items-end p-3 bg-slate-900 rounded-2xl border border-solid border-stone-950">
+        <div key={index} className="flex items-end p-4 bg-slate-900 rounded-2xl border border-solid border-stone-950">
             <UserDropdownMenu
               name={data.username}
               handleBan={() => handleBan(data.username)}
@@ -123,7 +116,7 @@ export function CommentList(): JSX.Element {
               </p>
             </div>
           </div>    
-          <div className="ml-auto font-medium mt-auto mb-auto">{data.comment}</div>
+          <div className="ml-auto font-medium mt-auto mb-auto mr-3">{data.comment}</div>
         </div>
       ))}
           <div className="flex justify-center mt-4"> {/* Center pagination controls */}
