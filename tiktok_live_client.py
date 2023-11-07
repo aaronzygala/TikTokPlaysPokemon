@@ -281,4 +281,7 @@ class TikTokLiveManager:
     def get_follow_count(self):
         return self.follower_count
 
+    def get_mode(self):
+        return self.mode[0]
+
 

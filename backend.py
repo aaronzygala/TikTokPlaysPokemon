@@ -303,6 +303,17 @@ def write_constants_to_file(new_constants):
             else:
                 file.write(f"{key} = {repr(value['value'])}\n")
 
+@app.route('/api/mode', methods=['GET'])
+def get_mode():
+    if live_manager is not None:
+        mode = live_manager.get_mode()
+        data = {
+            'mode': mode,
+        }
+        return jsonify(data), 200
+    else:
+        return jsonify(''), 200  # Return an empty response if live_manager is None
+
 class ServerThread(threading.Thread):
     def __init__(self, app):
         threading.Thread.__init__(self)
