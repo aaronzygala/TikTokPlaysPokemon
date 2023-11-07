@@ -1,44 +1,30 @@
-// src/redux/actions.js
-
+// redux/actions.js
 export const initializeCountdown = (initialCountdown) => ({
     type: 'INITIALIZE_COUNTDOWN',
     payload: initialCountdown,
   });
-
-export const tick = () => ({
+  
+  export const tick = () => ({
     type: 'TICK',
-});
-
-export const startCountdown = () => async (dispatch) => {
-    console.log("TEST")
-    if (typeof Worker !== 'undefined') {
-        const worker = new Worker('./countdown-worker.js');
-
-        // Initialize the worker
-        worker.postMessage({ type: 'initialize' });
-        
-        // Start the countdown
-        worker.postMessage('start');
+  });
   
-      worker.onmessage = function (event) {
-        // Dispatch the countdown tick action
-        dispatch(tick);
-      };
+  export const startCountdown = () => async (dispatch) => {
+    // Perform any asynchronous operations if needed
   
-      dispatch({
-        type: 'START_COUNTDOWN',
-        payload: worker,
-      });
-    } else {
-      // Fallback for environments that do not support Web Workers
-    //   dispatch(fetchInitialCountdown());
-    }
+    // Start the countdown
+    const intervalId = setInterval(() => {
+      dispatch(tick());
+    }, 1000);
+  
+    // Dispatch the intervalId to store it in the Redux state
+    dispatch({
+      type: 'START_COUNTDOWN',
+      payload: intervalId,
+    });
   };
   
-  export const stopCountdown = (worker) => {
-    if (worker) {
-      worker.postMessage('stop');
-    }
+  export const stopCountdown = (intervalId) => {
+    clearInterval(intervalId);
   
     return {
       type: 'STOP_COUNTDOWN',

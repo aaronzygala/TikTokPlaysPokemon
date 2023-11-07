@@ -2,65 +2,66 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import { initializeCountdown } from '../redux/actions';
-
-const worker = new Worker('../redux/countdown.worker.js');
+import { initializeCountdown, tick } from '../redux/actions';
 
 const ToggleScriptTimer = () => {
   const dispatch = useDispatch();
   const countdown = useSelector((state) => state.countdown);
 
-  useEffect(() => {
-    // Initialize the worker
-    worker.postMessage({ type: 'initialize' });
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${String(minutes).padStart(2, '0')} : ${String(remainingSeconds).padStart(2, '0')}`;
+  };
 
-    // Fetch initial countdown from the API
+  const toggleScript = async () => {
+    try {
+      const response = await axios.post(`/api/restart`);
+      // Handle response if needed
+    } catch (error) {
+      console.error("Error toggling script:", error);
+    }
+  };
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get('/api/constants');
         const initialCountdown = response.data.constants.TOGGLE_SCRIPT_TIMER.value * 60;
-        dispatch(initializeCountdown(initialCountdown));
+        if (countdown === null){
+            dispatch(initializeCountdown(initialCountdown));
+        }
       } catch (error) {
         console.error('Error fetching initial countdown:', error);
       }
     };
 
+    // Only fetch the initial countdown when the component mounts
     fetchData();
-  }, [dispatch]);
+  }, [dispatch]); // This dependency array ensures that the effect runs only on mount
 
   useEffect(() => {
-    // Start the countdown
-    worker.postMessage({ type: 'start' });
+    if (countdown !== null) {
+      const intervalId = setInterval(() => {
+        dispatch(tick());
+      }, 1000);
 
-    // Return a cleanup function
-    return () => {
-      // Stop the countdown
-      worker.postMessage({ type: 'stop' });
-    };
-  }, []);
-
-  useEffect(() => {
-    // Handle messages from the worker
-    const handleMessage = (event) => {
-      const { type, countdown } = event.data;
-      if (type === 'tick') {
-        // Dispatch the tick action
-        dispatch({ type: 'TICK', payload: countdown });
+      if (countdown === 0) {
+        toggleScript();
+        dispatch(initializeCountdown(null)); // Set to null to avoid triggering the countdown logic until the new initial countdown is fetched
+        clearInterval(intervalId);
       }
-    };
 
-    worker.addEventListener('message', handleMessage);
-
-    // Cleanup the event listener
-    return () => {
-      worker.removeEventListener('message', handleMessage);
-    };
-  }, [dispatch]);
+      return () => clearInterval(intervalId);
+    }
+  }, [countdown, dispatch]);
 
   return (
     <div>
       {countdown !== null ? (
-        <p>Countdown: {formatTime(countdown)}</p>
+        <div className="">
+            <div className="text-lg font-bold">{formatTime(countdown)}</div>
+        </div>
       ) : (
         <p>Loading countdown...</p>
       )}

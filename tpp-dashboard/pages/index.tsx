@@ -1,4 +1,3 @@
-import LoginPage from "./login";
 import Layout from '../app/layout'
 import DashboardPage from "./dashboard"
 import { Provider } from 'react-redux';

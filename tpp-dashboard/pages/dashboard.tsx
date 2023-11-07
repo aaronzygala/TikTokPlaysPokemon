@@ -39,26 +39,32 @@ function OverViewTab(){
       <div className="grid gap-4 md:grid-cols-3">
 
       <div className="">
-        <div className = "grid grid-cols-2 gap-4">
-          <Card className="">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <div className = "grid grid-cols-2 gap-4 pb-4">
+          <Card className="col-span-2">
+            <CardHeader className="">
               <CardTitle className="text-md font-medium">Toggle Script</CardTitle>
             </CardHeader>
-            <CardContent className="">
-              <ToggleScriptButton/>
-              {/* <ToggleScriptTimer/> */}
+            <CardContent className="grid grid-cols-2 gap-4">
+              <div className="pr-1">
+                <ToggleScriptButton/>
+              </div>
+              <div className="ml-auto mt-auto mb-auto mr-5">
+                <div className="text-white text-sm">Timer: </div>
+                <ToggleScriptTimer/>
+              </div>
             </CardContent>
           </Card>
+
+        </div>
+        <div className="grid grid-cols-2 gap-4">
           <Card className="">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-md font-medium">Toggle Mode</CardTitle>
+            <CardHeader className="">
+              <CardTitle className="text-sm font-medium">Toggle Mode</CardTitle>
             </CardHeader>
             <CardContent className="">
               <ToggleModeButton/>
             </CardContent>
           </Card>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
           <StatisticDisplay statName={"followers"}/>
           <StatisticDisplay statName={"comments"}/>
           <StatisticDisplay statName={"gifts"}/>
@@ -142,6 +148,9 @@ export default function DashboardPage() {
         <div className="flex-1 space-y-4 p-8 pt-6">
           <div className="flex items-center justify-between space-y-2">
             <h2 className="text-2xl font-bold tracking-tight">TikTok Plays Gameboy Dashboard</h2>
+          </div>
+          <div className="flex items-center space-x-2 hidden">
+            <ToggleScriptTimer />
           </div>
           <Tabs defaultValue="overview" className="">
             <TabsList>
