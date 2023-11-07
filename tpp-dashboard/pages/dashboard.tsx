@@ -15,7 +15,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "../components/ui/tabs"
-import { CommandVotesDisplay } from "../components/overview"
+import { CommandVotesDisplay } from "../components/command-votes-display"
 import { CommentList } from "../components/comment-list"
 import { ModeToggle } from "@/components/ui/mode-toggle"
 import { Switch } from "@/components/ui/switch"
@@ -36,61 +36,53 @@ export const metadata: Metadata = {
 
 function OverViewTab(){
   return(
-      <div className="grid gap-4 lg:grid-cols-5">
+      <div className="grid gap-4 md:grid-cols-3">
 
-      <div className="grid gap-4 grid-rows-4 col-span-1">
-        <div className = "flex flex-row gap-4">
-          <Card className="col-span-1">
-            <CardHeader>
+      <div className="">
+        <div className = "grid grid-cols-2 gap-4">
+          <Card className="">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-md font-medium">Toggle Script</CardTitle>
             </CardHeader>
-            <CardContent className="justify-center items-center">
+            <CardContent className="">
               <ToggleScriptButton/>
               {/* <ToggleScriptTimer/> */}
             </CardContent>
           </Card>
-          <Card className="col-span-1">
-            <CardHeader>
+          <Card className="">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-md font-medium">Toggle Mode</CardTitle>
             </CardHeader>
-            <CardContent className="align-center">
+            <CardContent className="">
               <ToggleModeButton/>
-              
             </CardContent>
           </Card>
         </div>
-
-        <StatisticDisplay statName={"followers"}/>
-        <StatisticDisplay statName={"comments"}/>
-        <StatisticDisplay statName={"gifts"}/>
-
+        <div className="grid grid-cols-2 gap-4">
+          <StatisticDisplay statName={"followers"}/>
+          <StatisticDisplay statName={"comments"}/>
+          <StatisticDisplay statName={"gifts"}/>
+        </div>
       </div>
-      {/* <div className="space-y-4"> */}
 
-        <Card className="col-span-2">
+        <Card>
           <CardHeader>
             <CardTitle>Command Votes</CardTitle>
           </CardHeader>
-          <CardContent className="pl-2">
+          <CardContent>
             <CommandVotesDisplay />
           </CardContent>
         </Card>
-        <Card className="col-span-2">
+        <Card>
           <CardHeader>
-            <CardTitle className="grid grid-cols-3">
-              <div className="mt-auto mb-auto col-span-2">Recent comments</div>
-              <Input
-                  type="search"
-                  placeholder="Search for players..."
-                  className="md:w-[100px] lg:w-[200px]"
-                />                    
+            <CardTitle>
+              <div>Recent comments</div>                  
             </CardTitle>
           </CardHeader>
           <CardContent>
             <CommentList/>
           </CardContent>
         </Card>
-      {/* </div> */}
       </div>
   )
 }
@@ -161,7 +153,7 @@ export default function DashboardPage() {
                 Constants
               </TabsTrigger>
             </TabsList>
-            <TabsContent value="overview" className="space-y-4">            {/* <TabsTrigger value="overview">Overview</TabsTrigger> */}
+            <TabsContent value="overview" className="space-y-4">
               <OverViewTab/>
             </TabsContent>
             <TabsContent value="users">

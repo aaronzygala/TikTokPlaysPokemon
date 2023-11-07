@@ -99,7 +99,7 @@ def current_vote_comments():
             comment_counts[new_comment['comment']] += 1
 
     # Convert comment counts to the desired format
-    labels = ['A', 'B', 'Start', 'Select', 'Up', 'Down', 'Left', 'Right']
+    labels = ['Aa', 'Bb', 'Start', 'Select', 'Up', 'Down', 'Left', 'Right', 'Ll', 'Rr', 'Save', 'Load']
     data = [comment_counts[label] for label in labels]
 
     # Create a dictionary with labels, data, and timer value

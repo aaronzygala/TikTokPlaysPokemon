@@ -89,7 +89,7 @@ const ConstantsEditor = () => {
     } else if (constantValue.type === 'bool') {
       return (
         <Checkbox
-          className="mt-auto mb-auto ml-4"
+          className="mt-auto mb-auto ml-auto lg:ml-4"
           id={constantName}
           checked={editedConstants[constantName]?.value}
           onClick={(e) => handleInputChange(constantName, e.target.checked)}
@@ -105,8 +105,8 @@ const ConstantsEditor = () => {
         <CardHeader>Text:</CardHeader>
         {stringConstants.map(([constantName, constantValue]) => (
           <CardContent key={constantName}>
-            <div className="flex flex-row">
-              <p className="text-lg font-semibold">{constantName}: </p>
+            <div className="flex flex-col lg:flex-row">
+              <p className="text-sm font-semibold">{constantName}: </p>
               {renderInputByType(constantName, constantValue)}
             </div>
           </CardContent>
@@ -117,8 +117,8 @@ const ConstantsEditor = () => {
         <CardHeader>Numbers:</CardHeader>
         {intConstants.map(([constantName, constantValue]) => (
           <CardContent key={constantName}>
-            <div className="flex flex-row">
-              <p className="text-lg font-semibold">{constantName}: </p>
+            <div className="flex flex-col lg:flex-row">
+              <p className="text-sm font-semibold">{constantName}: </p>
               {renderInputByType(constantName, constantValue)}
             </div>
           </CardContent>
@@ -129,8 +129,8 @@ const ConstantsEditor = () => {
         <CardHeader>Toggle Gifts:</CardHeader>
         {boolConstants.map(([constantName, constantValue]) => (
           <CardContent key={constantName}>
-            <div className="flex flex-row">
-              <p className="text-lg font-semibold">{constantName}:</p>
+            <div className="flex flex-col lg:flex-row">
+              <p className="text-sm font-semibold">{constantName}:</p>
               {renderInputByType(constantName, constantValue)}
             </div>
           </CardContent>

@@ -97,7 +97,7 @@ export function CommentList(): JSX.Element {
     setCurrentPage(newPage);
   };
   return (
-    <div className="overflow-auto h-[650px]">
+    <div className="overflow-auto h-[235px] lg:h-[650px]">
       { recentComments.map((data, index) => (
         <div key={index} className="flex items-end p-4 bg-slate-900 rounded-2xl border border-solid border-stone-950">
             <UserDropdownMenu
