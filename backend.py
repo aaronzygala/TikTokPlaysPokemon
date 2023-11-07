@@ -5,7 +5,7 @@ from werkzeug.serving import make_server
 import threading
 import time
 from collections import Counter
-import json
+from collections import deque
 
 logging.basicConfig(level=logging.DEBUG, filename="output.log")  # Set the desired log level
 
@@ -17,25 +17,11 @@ app = Flask(__name__)
 app.json.sort_keys = False
 app.config['SECRET_KEY'] = "skM0gRq7zxJyaLQkApKyi49d2x9Uq8Ug"
 
-# @app.route('/api/login', methods=['POST'])
-# def login():
-#     app.logger.debug("Received login request")
-#
-#     # Logging request data
-#     app.logger.debug(f"Request form data: {request}")
-#     data = request.json
-#     submitted_username = data.get('username')
-#     submitted_password = data.get('password')
-#     app.logger.debug(f"Submitted username: {submitted_username}")
-#     app.logger.debug(f"Submitted password: {submitted_password}")
-#     if submitted_username == ADMIN_USER['username'] and submitted_password == ADMIN_USER['password']:
-#         response = jsonify({'message': 'Login successful'})
-#         return response
-#     else:
-#         return abort(401)
-
 # Define a global variable to hold the live_manager object
 live_manager = None
+
+# Initialize a deque for comments as a stack
+comments_stack = deque()
 
 @app.route('/api/recent_comments', methods=['GET'])
 def get_recent_comments():
@@ -45,15 +31,18 @@ def get_recent_comments():
 
         comments = live_manager.get_recent_comments()
 
+        # Add the newest comments to the front of the stack
+        comments_stack.extendleft(comments)
+
         # Calculate the total number of pages using math.ceil
-        max_pages = math.ceil(len(comments) / pageSize)
+        max_pages = math.ceil(len(comments_stack) / pageSize)
 
         # Calculate the start and end indices for the comments to return
         start_index = (page - 1) * pageSize
         end_index = start_index + pageSize
 
         # Get a subset of recent comments based on pagination
-        paginated_comments = comments[start_index:end_index]
+        paginated_comments = list(comments_stack)[start_index:end_index]
 
         # Create a dictionary containing recent comments and maxPages
         data = {
@@ -63,7 +52,8 @@ def get_recent_comments():
 
         return jsonify(data), 200
     else:
-        return jsonify([]), 200  # Return an empty response if live_manager is None
+        return jsonify([]), 200 # Return an empty response if live_manager is None
+
 
 
 # Create a counter to store comment counts
