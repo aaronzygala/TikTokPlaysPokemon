@@ -7,6 +7,7 @@ import path_constants
 import os
 import random
 import time
+from collections import deque
 
 
 class TikTokLiveManager:
@@ -35,7 +36,7 @@ class TikTokLiveManager:
             # http_timeout=20.0  # Increase the HTTP request timeout
         )
         self.key_press_queue = key_press_queue
-        self.recent_comments = []
+        self.recent_comments = deque()
         self.most_recent_comment = None
         self.client.add_listener("connect", self.on_connect)
         self.client.add_listener("comment", self.on_comment)
@@ -135,7 +136,7 @@ class TikTokLiveManager:
                         'comment': commands_triggered[0].capitalize(),
                         'timestamp': time.time()
                     }
-                    self.recent_comments.append(comment_data)  # Store the comment data
+                    self.recent_comments.appendleft(comment_data)  # Store the comment data
                     self.most_recent_comment = comment_data
 
     def add_to_file(self, file_path, string_to_add):

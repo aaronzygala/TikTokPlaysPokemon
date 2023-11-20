@@ -4,8 +4,7 @@ import logging
 from werkzeug.serving import make_server
 import threading
 import time
-from collections import Counter
-from collections import deque
+from collections import Counter, deque
 
 logging.basicConfig(level=logging.DEBUG, filename="output.log")  # Set the desired log level
 
@@ -20,9 +19,6 @@ app.config['SECRET_KEY'] = "skM0gRq7zxJyaLQkApKyi49d2x9Uq8Ug"
 # Define a global variable to hold the live_manager object
 live_manager = None
 
-# Initialize a deque for comments as a stack
-comments_stack = deque()
-
 @app.route('/api/recent_comments', methods=['GET'])
 def get_recent_comments():
     if live_manager is not None:
@@ -31,18 +27,15 @@ def get_recent_comments():
 
         comments = live_manager.get_recent_comments()
 
-        # Add the newest comments to the front of the stack
-        comments_stack.extendleft(comments)
-
         # Calculate the total number of pages using math.ceil
-        max_pages = math.ceil(len(comments_stack) / pageSize)
+        max_pages = math.ceil(len(comments) / pageSize)
 
         # Calculate the start and end indices for the comments to return
         start_index = (page - 1) * pageSize
         end_index = start_index + pageSize
 
         # Get a subset of recent comments based on pagination
-        paginated_comments = list(comments_stack)[start_index:end_index]
+        paginated_comments = list(comments)[start_index:end_index]
 
         # Create a dictionary containing recent comments and maxPages
         data = {
