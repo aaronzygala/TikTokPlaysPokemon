@@ -7,6 +7,7 @@ import constants
 import pygetwindow as gw
 from playsound import playsound
 
+
 class KeyPressSimulator:
     """
     A class that simulates batched key presses based on commands from a queue.
@@ -30,25 +31,33 @@ class KeyPressSimulator:
         simulate_key_presses(): Continuously process commands and simulate key presses.
         press_batch(commands): Simulate a batch of key presses.
     """
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
     def __init__(self, key_press_queue, sound_request_queue, MODE):
-        # Find the emulator window using partial title match
-        self.emulator_window = self.find_and_activate_window(constants.EMULATOR_WINDOW)
-        self.tiktok_live_studio_window = self.find_and_activate_window(constants.TIKTOK_LIVE_STUDIO_WINDOW)
+        if not hasattr(self, 'initialized'):
+            self.initialized = True
+            self.emulator_window = self.find_and_activate_window(constants.EMULATOR_WINDOW)
+            self.tiktok_live_studio_window = self.find_and_activate_window(constants.TIKTOK_LIVE_STUDIO_WINDOW)
 
-        self.key_press_queue = key_press_queue
-        self.sound_request_queue = sound_request_queue
-        self.votes = {}
-        self.vote_interval = constants.VOTE_INTERVAL
-        self.last_vote_time = time.time()
-        self.key_press_thread = threading.Thread(target=self.simulate_key_presses)
-        self.exit_event = threading.Event()  # Event to signal the thread to exit
+            self.key_press_queue = key_press_queue
+            self.sound_request_queue = sound_request_queue
+            self.votes = {}
+            self.vote_interval = constants.VOTE_INTERVAL
+            self.last_vote_time = time.time()
+            self.key_press_thread = threading.Thread(target=self.simulate_key_presses)
+            self.exit_event = threading.Event()  # Event to signal the thread to exit
 
-        self.focus_tiktok_studio_thread = threading.Thread(target=self.focus_tiktok_with_timer)
-        self.sound_request_thread = threading.Thread(target=self.process_sound_requests)
-        self.mode = MODE
+            self.focus_tiktok_studio_thread = threading.Thread(target=self.focus_tiktok_with_timer)
+            self.sound_request_thread = threading.Thread(target=self.process_sound_requests)
+            self.mode = MODE
 
-        self.emulator_window_lock = threading.Lock()  # Create a lock for self.emulator_window
-        self.votes_lock = threading.Lock()  # Create a lock for accessing self.votes
+            self.emulator_window_lock = threading.Lock()  # Create a lock for self.emulator_window
+            self.votes_lock = threading.Lock()  # Create a lock for accessing self.votes
 
     def find_and_activate_window(self, window_title):
         windows = gw.getWindowsWithTitle(window_title)

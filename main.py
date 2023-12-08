@@ -6,18 +6,12 @@ import queue
 import backend
 import os, sys
 from threading import Thread
-
+from singleton_instances import get_live_manager, get_key_simulator
 
 def main():
-    MODE = [constants.DEFAULT_MODE]
-    # Create a queue for key press batching
-    key_press_queue = queue.Queue()
-    sound_request_queue = queue.Queue()
-    # Create instances of TikTokLiveManager and KeyPressSimulator
-    key_simulator = key_press_simulator.KeyPressSimulator(key_press_queue, sound_request_queue, MODE=MODE)
-    live_manager = tiktok_live_client.TikTokLiveManager(key_press_queue, sound_request_queue, MODE=MODE)
+    key_simulator = get_key_simulator()
+    live_manager = get_live_manager()
     restart_thread = Thread(target=handle_restart, args=(key_simulator,live_manager))
-    backend.live_manager = live_manager
 
     try:
         key_simulator.start()

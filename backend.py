@@ -5,6 +5,7 @@ from werkzeug.serving import make_server
 import threading
 import time
 from collections import Counter, deque
+from singleton_instances import get_live_manager
 
 logging.basicConfig(level=logging.DEBUG, filename="output.log")  # Set the desired log level
 
@@ -17,7 +18,7 @@ app.json.sort_keys = False
 app.config['SECRET_KEY'] = "skM0gRq7zxJyaLQkApKyi49d2x9Uq8Ug"
 
 # Define a global variable to hold the live_manager object
-live_manager = None
+live_manager = get_live_manager()
 
 @app.route('/api/recent_comments', methods=['GET'])
 def get_recent_comments():
