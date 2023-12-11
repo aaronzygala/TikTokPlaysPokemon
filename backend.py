@@ -5,6 +5,7 @@ from werkzeug.serving import make_server
 import threading
 import time
 from collections import Counter, deque
+from singleton_instances import get_live_manager, get_key_press_simulator
 
 logging.basicConfig(level=logging.DEBUG, filename="output.log")  # Set the desired log level
 
@@ -16,11 +17,12 @@ app = Flask(__name__)
 app.json.sort_keys = False
 app.config['SECRET_KEY'] = "skM0gRq7zxJyaLQkApKyi49d2x9Uq8Ug"
 
-# Define a global variable to hold the live_manager object
-live_manager = None
+# # Define a global variable to hold the live_manager object
+# live_manager = None
 
 @app.route('/api/recent_comments', methods=['GET'])
 def get_recent_comments():
+    live_manager = get_live_manager()
     if live_manager is not None:
         page = request.args.get("page", type=int, default=1)
         pageSize = request.args.get("pageSize", type=int, default=8)
@@ -55,45 +57,47 @@ timer_start_time = None
 counted_comments = set()  # Store unique comments (user and comment) counted during the timer interval
 @app.route('/api/current_vote', methods=['GET'])
 def current_vote_comments():
-    global timer_start_time
+    live_manager = get_live_manager()
+    if live_manager is not None:
+        global timer_start_time
 
-    # Check if the timer has started
-    if timer_start_time is None:
-        timer_start_time = time.time()
+        # Check if the timer has started
+        if timer_start_time is None:
+            timer_start_time = time.time()
 
-    # Calculate the time remaining in the timer (in seconds)
-    timer_remaining = max(0, 10 - int(time.time() - timer_start_time))
+        # Calculate the time remaining in the timer (in seconds)
+        timer_remaining = max(0, 10 - int(time.time() - timer_start_time))
 
-    # Check if the timer has finished (10 seconds)
-    if timer_remaining == 0:
-        # Reset the timer start time and comment counts
-        timer_start_time = time.time()
-        comment_counts.clear()
+        # Check if the timer has finished (10 seconds)
+        if timer_remaining == 0:
+            # Reset the timer start time and comment counts
+            timer_start_time = time.time()
+            comment_counts.clear()
 
-    # Get the most recent comment from live_manager
-    new_comment = live_manager.get_most_recent_comment()
+        # Get the most recent comment from live_manager
+        new_comment = live_manager.get_most_recent_comment()
 
-    if new_comment:
-        # Create a unique key (user, comment, timestamp) to identify comments
-        comment_key = (new_comment['username'], new_comment['comment'], new_comment['timestamp'])
+        if new_comment:
+            # Create a unique key (user, comment, timestamp) to identify comments
+            comment_key = (new_comment['username'], new_comment['comment'], new_comment['timestamp'])
 
-        if comment_key not in counted_comments:
-            counted_comments.add(comment_key)  # Add the comment key to the set
-            comment_counts[new_comment['comment']] += 1
+            if comment_key not in counted_comments:
+                counted_comments.add(comment_key)  # Add the comment key to the set
+                comment_counts[new_comment['comment']] += 1
 
-    # Convert comment counts to the desired format
-    labels = ['Aa', 'Bb', 'Start', 'Select', 'Up', 'Down', 'Left', 'Right', 'Ll', 'Rr', 'Save', 'Load']
-    data = [comment_counts[label] for label in labels]
+        # Convert comment counts to the desired format
+        labels = ['Aa', 'Bb', 'Start', 'Select', 'Up', 'Down', 'Left', 'Right', 'Ll', 'Rr', 'Save', 'Load']
+        data = [comment_counts[label] for label in labels]
 
-    # Create a dictionary with labels, data, and timer value
-    result = {
-        'labels': labels,
-        'data': data,
-        'timer_remaining': int(timer_remaining),  # Convert to integer for JSON
-    }
+        # Create a dictionary with labels, data, and timer value
+        result = {
+            'labels': labels,
+            'data': data,
+            'timer_remaining': int(timer_remaining),  # Convert to integer for JSON
+        }
 
-    # Return the result as a JSON response
-    return jsonify(result), 200
+        # Return the result as a JSON response
+        return jsonify(result), 200
 
 
 def get_names_from_file(file_path):
@@ -116,23 +120,27 @@ def get_whitelist():
 
 @app.route('/api/whitelist/add', methods=['POST'])
 def add_to_whitelist():
-    data = request.get_json()
-    name = data.get('name')
-    if name:
-        live_manager.whitelist_user(name)
-        return jsonify({'message': 'Name added successfully'})
-    else:
-        return jsonify({'error': 'Name cannot be empty'})
+    live_manager = get_live_manager()
+    if live_manager is not None:
+        data = request.get_json()
+        name = data.get('name')
+        if name:
+            live_manager.whitelist_user(name)
+            return jsonify({'message': 'Name added successfully'})
+        else:
+            return jsonify({'error': 'Name cannot be empty'})
 
 @app.route('/api/whitelist/remove', methods=['POST'])
 def remove_from_whitelist():
-    data = request.get_json()
-    name = data.get('name')
-    if name:
-        live_manager.remove_from_whitelist(name)
-        return jsonify({'message': 'Name removed successfully'})
-    else:
-        return jsonify({'error': 'Name not found in the list'})
+    live_manager = get_live_manager()
+    if live_manager is not None:
+        data = request.get_json()
+        name = data.get('name')
+        if name:
+            live_manager.remove_from_whitelist(name)
+            return jsonify({'message': 'Name removed successfully'})
+        else:
+            return jsonify({'error': 'Name not found in the list'})
 
 @app.route('/api/banned', methods=['GET'])
 def get_banned_list():
@@ -141,22 +149,26 @@ def get_banned_list():
 
 @app.route('/api/banned/add', methods=['POST'])
 def add_to_banned_list():
-    data = request.get_json()
-    name = data.get('name')
-    if name:
-        live_manager.ban_user(name, "baz4k")
-        return jsonify({'message': 'Name added successfully'})
-    else:
-        return jsonify({'error': 'Name cannot be empty'})
+    live_manager = get_live_manager()
+    if live_manager is not None:
+        data = request.get_json()
+        name = data.get('name')
+        if name:
+            live_manager.ban_user(name, "baz4k")
+            return jsonify({'message': 'Name added successfully'})
+        else:
+            return jsonify({'error': 'Name cannot be empty'})
 @app.route('/api/banned/remove', methods=['POST'])
 def remove_from_banned_list():
-    data = request.get_json()
-    name = data.get('name')
-    if name:
-        live_manager.remove_from_banned_list(name)
-        return jsonify({'message': 'Name removed successfully'})
-    else:
-        return jsonify({'error': 'Name not found in the list'})
+    live_manager = get_live_manager()
+    if live_manager is not None:
+        data = request.get_json()
+        name = data.get('name')
+        if name:
+            live_manager.remove_from_banned_list(name)
+            return jsonify({'message': 'Name removed successfully'})
+        else:
+            return jsonify({'error': 'Name not found in the list'})
 
 @app.route('/api/admins', methods=['GET'])
 def get_admins():
@@ -165,24 +177,29 @@ def get_admins():
 
 @app.route('/api/admins/add', methods=['POST'])
 def add_to_admins():
-    data = request.get_json()
-    name = data.get('name')
-    if name:
-        live_manager.admin_user(name)
-        return jsonify({'message': 'Name added successfully'})
-    else:
-        return jsonify({'error': 'Name cannot be empty'})
+    live_manager = get_live_manager()
+    if live_manager is not None:
+        data = request.get_json()
+        name = data.get('name')
+        if name:
+            live_manager.admin_user(name)
+            return jsonify({'message': 'Name added successfully'})
+        else:
+            return jsonify({'error': 'Name cannot be empty'})
 @app.route('/api/admins/remove', methods=['POST'])
 def remove_from_admins():
-    data = request.get_json()
-    name = data.get('name')
-    if name:
-        live_manager.remove_from_admin(name)
-        return jsonify({'message': 'Name removed successfully'})
-    else:
-        return jsonify({'error': 'Name not found in the list'})
+    live_manager = get_live_manager()
+    if live_manager is not None:
+        data = request.get_json()
+        name = data.get('name')
+        if name:
+            live_manager.remove_from_admin(name)
+            return jsonify({'message': 'Name removed successfully'})
+        else:
+            return jsonify({'error': 'Name not found in the list'})
 @app.route('/api/toggle_mode', methods=['POST'])
 def toggle_mode():
+    live_manager = get_live_manager()
     if live_manager is not None:
         mode = live_manager.toggle_mode()
 
@@ -195,6 +212,7 @@ def toggle_mode():
         return jsonify(''), 200  # Return an empty response if live_manager is None
 
 def get_statistic(stat_name):
+    live_manager = get_live_manager()
     if live_manager is not None:
         if stat_name == "followers":
             stat = live_manager.get_follow_count()
@@ -298,6 +316,7 @@ def write_constants_to_file(new_constants):
 
 @app.route('/api/mode', methods=['GET'])
 def get_mode():
+    live_manager = get_live_manager()
     if live_manager is not None:
         mode = live_manager.get_mode()
         data = {
