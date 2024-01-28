@@ -49,7 +49,6 @@ class TikTokLiveManager:
             self.client.add_listener("connect", self.on_connect)
             self.client.add_listener("comment", self.on_comment)
             self.client.add_listener("gift", self.on_gift)
-            self.client.add_listener("follow", self.on_follow)
 
             self.mode = MODE
             self.init_images()
@@ -192,7 +191,7 @@ class TikTokLiveManager:
             else:
                 self.add_ban_vote(username_to_ban)
                 vote_count = self.get_ban_vote_count(username_to_ban)
-                if vote_count >= path_constants.VOTE_BAN_MINIMUM:
+                if vote_count >= constants.VOTE_BAN_MINIMUM:
                     self.banned_list.append(username_to_ban)
                     self.add_to_file(path_constants.BANNED_PATH, username_to_ban)
                     del self.ban_votes_per_user[username_to_ban]
@@ -278,19 +277,5 @@ class TikTokLiveManager:
         print("PLAYING ANIME THEME SONG...")
         self.sound_request_queue.put("theme_song")
 
-    def get_comment_count(self):
-        return self.comment_count
-    def get_gift_count(self):
-        return self.gift_count
-
-    async def on_follow(self, event: FollowEvent):
-        print(f"@{event.user.unique_id} followed you!")
-        self.follower_count += 1
-
-    def get_follow_count(self):
-        return self.follower_count
-
-    def get_mode(self):
-        return self.mode[0]
 
 
