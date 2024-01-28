@@ -68,7 +68,7 @@ class KeyPressSimulator:
             except gw.PyGetWindowException:
                 # print(f"Error while activating {window_title} window: {e}")
                 window.minimize()
-                window.maximize()
+                window.restore()
             return window
         else:
             print(f"{window_title} window not found.")
@@ -81,7 +81,7 @@ class KeyPressSimulator:
                     self.tiktok_live_studio_window.activate()
                 except gw.PyGetWindowException:
                     self.tiktok_live_studio_window.minimize()
-                    self.tiktok_live_studio_window.maximize()
+                    self.tiktok_live_studio_window.restore()
                 pydirectinput.press('space')
             time.sleep(constants.TIKTOK_FOCUS_TIMER * 60)
 
@@ -125,7 +125,7 @@ class KeyPressSimulator:
                 self.emulator_window.activate()
             except gw.PyGetWindowException:
                 self.emulator_window.minimize()
-                self.emulator_window.maximize()
+                self.emulator_window.restore()
             print("Command registered: ", command)
             pydirectinput.press(command, interval=0.2)
 
