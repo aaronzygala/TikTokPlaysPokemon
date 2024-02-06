@@ -28,39 +28,31 @@ class TikTokLiveManager:
         on_comment(event): Callback for handling comment events and sending key press commands.
     """
 
-    _instance = None
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super().__new__(cls)
-        return cls._instance
-
     def __init__(self, key_press_queue, sound_request_queue, MODE):
-        if not hasattr(self, 'initialized'):
-            self.initialized = True
-            self.client = TikTokLiveClient(
-                constants.TIKTOK_USERNAME,
-                # ws_ping_interval=30.0,  # Increase the interval between keepalive pings
-                # ws_timeout=20.0,  # Increase the websocket timeout
-                # http_timeout=20.0  # Increase the HTTP request timeout
-            )
-            self.key_press_queue = key_press_queue
-            self.recent_comments = deque()
-            self.most_recent_comment = None
-            self.client.add_listener("connect", self.on_connect)
-            self.client.add_listener("comment", self.on_comment)
-            self.client.add_listener("gift", self.on_gift)
+        self.client = TikTokLiveClient(
+            constants.TIKTOK_USERNAME,
+            # ws_ping_interval=30.0,  # Increase the interval between keepalive pings
+            # ws_timeout=20.0,  # Increase the websocket timeout
+            # http_timeout=20.0  # Increase the HTTP request timeout
+        )
+        self.key_press_queue = key_press_queue
+        self.recent_comments = deque()
+        self.most_recent_comment = None
+        self.client.add_listener("connect", self.on_connect)
+        self.client.add_listener("comment", self.on_comment)
+        self.client.add_listener("gift", self.on_gift)
 
-            self.mode = MODE
-            self.init_images()
-            self.admin_list = self.read_lines(path_constants.ADMIN_PATH)
-            self.whitelist = self.read_lines(path_constants.WHITELIST_PATH)
-            self.ban_votes_per_user = {}
-            self.banned_list = self.read_lines(path_constants.BANNED_PATH)
-            self.sound_request_queue = sound_request_queue
-            self.processed_gifts = {}
-            self.comment_count = 0
-            self.follower_count = 0
-            self.gift_count = 0
+        self.mode = MODE
+        self.init_images()
+        self.admin_list = self.read_lines(path_constants.ADMIN_PATH)
+        self.whitelist = self.read_lines(path_constants.WHITELIST_PATH)
+        self.ban_votes_per_user = {}
+        self.banned_list = self.read_lines(path_constants.BANNED_PATH)
+        self.sound_request_queue = sound_request_queue
+        self.processed_gifts = {}
+        self.comment_count = 0
+        self.follower_count = 0
+        self.gift_count = 0
 
     def init_images(self):
         chaos_image = Image.open(path_constants.CHAOS_IMAGE)
