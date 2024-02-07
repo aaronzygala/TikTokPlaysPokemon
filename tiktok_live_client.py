@@ -28,7 +28,8 @@ class TikTokLiveManager:
         on_comment(event): Callback for handling comment events and sending key press commands.
     """
 
-    def __init__(self, key_press_queue, sound_request_queue, MODE):
+    def __init__(self, key_press_queue, sound_request_queue):
+        print("Entering TikTokManager.__init__: ")
 
         self.client = TikTokLiveClient(
             constants.TIKTOK_USERNAME,
@@ -41,7 +42,6 @@ class TikTokLiveManager:
         self.client.add_listener("comment", self.on_comment)
         self.client.add_listener("gift", self.on_gift)
 
-        self.mode = MODE
         self.init_images()
         self.admin_list = self.read_lines(path_constants.ADMIN_PATH)
         self.ban_votes_per_user = {}
@@ -50,19 +50,29 @@ class TikTokLiveManager:
         self.processed_gifts = {}
 
     def read_lines(self, filename):
+        print("Entering TikTokManager.read_lines: ")
+
         with open(filename) as file:
             return file.read().splitlines()
 
     def run(self):
+        print("Entering TikTokManager.run: ")
+
         self.client.run()
 
     def stop(self):
+        print("Entering TikTokManager.stop: ")
+
         self.client.stop()
 
     async def on_connect(self, _: ConnectEvent):
+        print("Entering TikTokManager.on_connect: ")
+
         print("Connected to Room ID:", self.client.room_id)
 
     async def on_comment(self, event: CommentEvent):
+        print("Entering TikTokManager.on_comment: ")
+
         print(f"{event.user.nickname}: {event.comment}")
         if event.comment is None:
             return  # Ignore comments with None content
@@ -79,9 +89,6 @@ class TikTokLiveManager:
                 if event.comment == "CHANGE_BUDDY":
                     self.randomize_buddy()
 
-                if event.comment == "CHANGE_MODE":
-                    self.toggle_mode()
-
                 if event.comment == "START_SONG":
                     self.play_theme_song()
 
@@ -95,15 +102,21 @@ class TikTokLiveManager:
                     self.key_press_queue.put([keys_to_trigger[0]])
 
     def add_to_file(self, file_path, string_to_add):
+        print("Entering TikTokManager.add_to_file: ")
+
         with open(file_path, "a") as whitelist_file:
             whitelist_file.write(string_to_add + "\n")
 
     def rewrite_file(self, file_path, rewrite_list):
+        print("Entering TikTokManager.rewrite_file: ")
+
         with open(file_path, "w") as whitelist_file:
             for string in rewrite_list:
                 whitelist_file.write(string + "\n")
 
     def ban_user(self, username_to_ban, username_of_caller):
+        print("Entering TikTokManager.ban_user: ")
+
         if username_to_ban in self.admin_list:
             return
 
@@ -115,20 +128,28 @@ class TikTokLiveManager:
             print("Only admins are allowed to ban users.")
 
     def remove_from_banned_list(self, username):
+        print("Entering TikTokManager.remove_from_banned_list: ")
+
         print("REMOVING A USER FROM BANNED LIST: " + username)
         self.banned_list.remove(username)
         self.rewrite_file(path_constants.BANNED_PATH, self.banned_list)
 
     def get_ban_vote_count(self, username):
+        print("Entering TikTokManager.get_ban_vote_count: ")
+
         return self.ban_votes_per_user[username]
 
     def add_ban_vote(self, username):
+        print("Entering TikTokManager.add_ban_vote: ")
+
         if username in self.ban_votes_per_user:
             self.ban_votes_per_user[username] += 1
         else:
             self.ban_votes_per_user[username] = 1
 
     async def on_gift(self, event: GiftEvent):
+        print("Entering TikTokManager.on_gift: ")
+
         self.gift_count += 1
         unique_identifier = self.create_unique_identifier(event)
         current_time = time.time()
@@ -137,9 +158,6 @@ class TikTokLiveManager:
             if current_time - self.processed_gifts[unique_identifier] <= 5:
                 return
         print(f"{event.user.nickname} sent \"{event.gift.info.name}\"")
-
-        if constants.ORDER_MODE_GIFT in event.gift.info.name and constants.ORDER_MODE_AVAILABLE:
-            self.toggle_mode()
 
         if constants.THEME_SONG_GIFT in event.gift.info.name and constants.THEME_SONG_AVAILABLE:
             self.play_theme_song()
@@ -150,11 +168,15 @@ class TikTokLiveManager:
         self.processed_gifts[unique_identifier] = current_time
 
     def create_unique_identifier(self, event: GiftEvent):
+        print("Entering TikTokManager.create_unique_identifier: ")
+
         # Combine attributes to create a unique identifier
         identifier = f"{event.user.unique_id}_{event.gift.id}"
         return identifier
 
     def randomize_buddy(self):
+        print("Entering TikTokManager.randomize_buddy: ")
+
         print("RANDOMIZING BUDDY...")
         new_buddy_file = random.choice(os.listdir(path_constants.POKEMON_DIRECTORY))
         print("new_buddy_file: " + new_buddy_file)
@@ -163,5 +185,7 @@ class TikTokLiveManager:
         new_buddy_image.close()
 
     def play_theme_song(self):
+        print("Entering TikTokManager.play_theme_song: ")
+
         print("PLAYING ANIME THEME SONG...")
         self.sound_request_queue.put("theme_song")
