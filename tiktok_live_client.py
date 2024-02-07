@@ -74,8 +74,6 @@ class TikTokLiveManager:
         print(f"{event.user.nickname}: {event.comment}")
         if event.comment is None:
             return  # Ignore comments with None content
-        self.comment_count += 1
-
         if event.comment.startswith("!ban") and event.user.unique_id in self.admin_list:
             parts = event.comment.split()
             if len(parts) == 2 and parts[0] == "!ban" and parts[1] not in self.banned_list:
