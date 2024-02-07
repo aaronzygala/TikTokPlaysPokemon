@@ -133,7 +133,6 @@ class TikTokLiveManager:
     async def on_gift(self, event: GiftEvent):
         print("Entering TikTokManager.on_gift: ")
 
-        self.gift_count += 1
         unique_identifier = self.create_unique_identifier(event)
         current_time = time.time()
 
