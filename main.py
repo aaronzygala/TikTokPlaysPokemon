@@ -8,10 +8,9 @@ from key_press_simulator import KeyPressSimulator
 def main():
     key_press_queue = Queue()
     sound_request_queue = Queue()
-    MODE = [constants.DEFAULT_MODE]
 
-    live_manager = TikTokLiveManager(key_press_queue, sound_request_queue, MODE)
-    key_press_simulator = KeyPressSimulator(key_press_queue, sound_request_queue, MODE)
+    live_manager = TikTokLiveManager(key_press_queue, sound_request_queue)
+    key_press_simulator = KeyPressSimulator(key_press_queue, sound_request_queue)
 
     try:
         print("Before key_press_simulator.start()")
