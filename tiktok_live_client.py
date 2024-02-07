@@ -42,9 +42,7 @@ class TikTokLiveManager:
         self.client.add_listener("comment", self.on_comment)
         self.client.add_listener("gift", self.on_gift)
 
-        self.init_images()
         self.admin_list = self.read_lines(path_constants.ADMIN_PATH)
-        self.ban_votes_per_user = {}
         self.banned_list = self.read_lines(path_constants.BANNED_PATH)
         self.sound_request_queue = sound_request_queue
         self.processed_gifts = {}
@@ -133,19 +131,6 @@ class TikTokLiveManager:
         print("REMOVING A USER FROM BANNED LIST: " + username)
         self.banned_list.remove(username)
         self.rewrite_file(path_constants.BANNED_PATH, self.banned_list)
-
-    def get_ban_vote_count(self, username):
-        print("Entering TikTokManager.get_ban_vote_count: ")
-
-        return self.ban_votes_per_user[username]
-
-    def add_ban_vote(self, username):
-        print("Entering TikTokManager.add_ban_vote: ")
-
-        if username in self.ban_votes_per_user:
-            self.ban_votes_per_user[username] += 1
-        else:
-            self.ban_votes_per_user[username] = 1
 
     async def on_gift(self, event: GiftEvent):
         print("Entering TikTokManager.on_gift: ")
