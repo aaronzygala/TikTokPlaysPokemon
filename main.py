@@ -14,17 +14,13 @@ def main():
     key_press_simulator = KeyPressSimulator(key_press_queue, sound_request_queue, MODE)
 
     try:
-        try:
-            print("Before key_press_simulator.start()")
-            key_press_simulator.start()
-            print("After key_press_simulator.start()")
+        print("Before key_press_simulator.start()")
+        key_press_simulator.start()
+        print("After key_press_simulator.start()")
 
-            print("Before live_manager.start()")
-            live_manager.run()
-            print("After live_manager.start()")
-        finally:
-            key_press_simulator.stop()
-            live_manager.stop()
+        print("Before live_manager.start()")
+        live_manager.run()
+        print("After live_manager.start()")
 
 
     finally:
