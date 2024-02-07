@@ -28,41 +28,32 @@ class TikTokLiveManager:
         on_comment(event): Callback for handling comment events and sending key press commands.
     """
 
-    _instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super().__new__(cls)
-        return cls._instance
-
     def __init__(self, key_press_queue, sound_request_queue, MODE):
-        if not hasattr(self, 'initialized'):
-            self.initialized = True
-            self.client = TikTokLiveClient(
-                constants.TIKTOK_USERNAME,
-                # ws_ping_interval=30.0,  # Increase the interval between keepalive pings
-                # ws_timeout=20.0,  # Increase the websocket timeout
-                # http_timeout=20.0  # Increase the HTTP request timeout
-            )
-            self.key_press_queue = key_press_queue
-            self.recent_comments = deque()
-            self.most_recent_comment = None
-            self.client.add_listener("connect", self.on_connect)
-            self.client.add_listener("comment", self.on_comment)
-            self.client.add_listener("gift", self.on_gift)
-            self.client.add_listener("follow", self.on_follow)
 
-            self.mode = MODE
-            self.init_images()
-            self.admin_list = self.read_lines(path_constants.ADMIN_PATH)
-            self.whitelist = self.read_lines(path_constants.WHITELIST_PATH)
-            self.ban_votes_per_user = {}
-            self.banned_list = self.read_lines(path_constants.BANNED_PATH)
-            self.sound_request_queue = sound_request_queue
-            self.processed_gifts = {}
-            self.comment_count = 0
-            self.follower_count = 0
-            self.gift_count = 0
+        self.client = TikTokLiveClient(
+            constants.TIKTOK_USERNAME,
+            # ws_ping_interval=30.0,  # Increase the interval between keepalive pings
+            # ws_timeout=20.0,  # Increase the websocket timeout
+            # http_timeout=20.0  # Increase the HTTP request timeout
+        )
+        self.key_press_queue = key_press_queue
+        self.recent_comments = deque()
+        self.most_recent_comment = None
+        self.client.add_listener("connect", self.on_connect)
+        self.client.add_listener("comment", self.on_comment)
+        self.client.add_listener("gift", self.on_gift)
+
+        self.mode = MODE
+        self.init_images()
+        self.admin_list = self.read_lines(path_constants.ADMIN_PATH)
+        self.whitelist = self.read_lines(path_constants.WHITELIST_PATH)
+        self.ban_votes_per_user = {}
+        self.banned_list = self.read_lines(path_constants.BANNED_PATH)
+        self.sound_request_queue = sound_request_queue
+        self.processed_gifts = {}
+        self.comment_count = 0
+        self.follower_count = 0
+        self.gift_count = 0
 
     def init_images(self):
         chaos_image = Image.open(path_constants.CHAOS_IMAGE)
@@ -193,7 +184,7 @@ class TikTokLiveManager:
             else:
                 self.add_ban_vote(username_to_ban)
                 vote_count = self.get_ban_vote_count(username_to_ban)
-                if vote_count >= path_constants.VOTE_BAN_MINIMUM:
+                if vote_count >= constants.VOTE_BAN_MINIMUM:
                     self.banned_list.append(username_to_ban)
                     self.add_to_file(path_constants.BANNED_PATH, username_to_ban)
                     del self.ban_votes_per_user[username_to_ban]
@@ -279,19 +270,5 @@ class TikTokLiveManager:
         print("PLAYING ANIME THEME SONG...")
         self.sound_request_queue.put("theme_song")
 
-    def get_comment_count(self):
-        return self.comment_count
-    def get_gift_count(self):
-        return self.gift_count
-
-    async def on_follow(self, event: FollowEvent):
-        print(f"@{event.user.unique_id} followed you!")
-        self.follower_count += 1
-
-    def get_follow_count(self):
-        return self.follower_count
-
-    def get_mode(self):
-        return self.mode[0]
 
 

@@ -31,33 +31,25 @@ class KeyPressSimulator:
         simulate_key_presses(): Continuously process commands and simulate key presses.
         press_batch(commands): Simulate a batch of key presses.
     """
-    _instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super().__new__(cls)
-        return cls._instance
 
     def __init__(self, key_press_queue, sound_request_queue, MODE):
-        if not hasattr(self, 'initialized'):
-            self.initialized = True
-            self.emulator_window = self.find_and_activate_window(constants.EMULATOR_WINDOW)
-            self.tiktok_live_studio_window = self.find_and_activate_window(constants.TIKTOK_LIVE_STUDIO_WINDOW)
+        self.initialized = True
+        self.emulator_window = self.find_and_activate_window(constants.EMULATOR_WINDOW)
+        self.tiktok_live_studio_window = self.find_and_activate_window(constants.TIKTOK_LIVE_STUDIO_WINDOW)
 
-            self.key_press_queue = key_press_queue
-            self.sound_request_queue = sound_request_queue
-            self.votes = {}
-            self.vote_interval = constants.VOTE_INTERVAL
-            self.last_vote_time = time.time()
-            self.key_press_thread = threading.Thread(target=self.simulate_key_presses)
-            self.exit_event = threading.Event()  # Event to signal the thread to exit
+        self.key_press_queue = key_press_queue
+        self.sound_request_queue = sound_request_queue
+        self.votes = {}
+        self.vote_interval = constants.VOTE_INTERVAL
+        self.last_vote_time = time.time()
+        self.key_press_thread = threading.Thread(target=self.simulate_key_presses)
 
-            self.focus_tiktok_studio_thread = threading.Thread(target=self.focus_tiktok_with_timer)
-            self.sound_request_thread = threading.Thread(target=self.process_sound_requests)
-            self.mode = MODE
+        self.focus_tiktok_studio_thread = threading.Thread(target=self.focus_tiktok_with_timer)
+        self.sound_request_thread = threading.Thread(target=self.process_sound_requests)
+        self.mode = MODE
 
-            self.emulator_window_lock = threading.Lock()  # Create a lock for self.emulator_window
-            self.votes_lock = threading.Lock()  # Create a lock for accessing self.votes
+        self.emulator_window_lock = threading.Lock()  # Create a lock for self.emulator_window
+        self.votes_lock = threading.Lock()  # Create a lock for accessing self.votes
 
     def find_and_activate_window(self, window_title):
         windows = gw.getWindowsWithTitle(window_title)
@@ -68,7 +60,7 @@ class KeyPressSimulator:
             except gw.PyGetWindowException:
                 # print(f"Error while activating {window_title} window: {e}")
                 window.minimize()
-                window.maximize()
+                window.restore()
             return window
         else:
             print(f"{window_title} window not found.")
@@ -81,7 +73,7 @@ class KeyPressSimulator:
                     self.tiktok_live_studio_window.activate()
                 except gw.PyGetWindowException:
                     self.tiktok_live_studio_window.minimize()
-                    self.tiktok_live_studio_window.maximize()
+                    self.tiktok_live_studio_window.restore()
                 pydirectinput.press('space')
             time.sleep(constants.TIKTOK_FOCUS_TIMER * 60)
 
@@ -91,7 +83,6 @@ class KeyPressSimulator:
         self.sound_request_thread.start()  # Start the sound request processing thread
 
     def stop(self):
-        self.exit_event.set()
         self.key_press_queue.put(None)
         self.sound_request_queue.put(None)
         self.key_press_thread.join()
@@ -99,7 +90,7 @@ class KeyPressSimulator:
         self.sound_request_thread.join()
 
     def simulate_key_presses(self):
-        while not self.exit_event.is_set():
+        while True:
             commands_to_press = self.key_press_queue.get()
             if commands_to_press is None:
                 continue
@@ -125,7 +116,7 @@ class KeyPressSimulator:
                 self.emulator_window.activate()
             except gw.PyGetWindowException:
                 self.emulator_window.minimize()
-                self.emulator_window.maximize()
+                self.emulator_window.restore()
             print("Command registered: ", command)
             pydirectinput.press(command, interval=0.2)
 
@@ -137,7 +128,7 @@ class KeyPressSimulator:
                 self.votes[command[0]] = 1
 
     def process_sound_requests(self):
-        while not self.exit_event.is_set():
+        while True:
             request = self.sound_request_queue.get()
             if request is None:
                 continue
