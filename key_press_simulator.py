@@ -113,7 +113,7 @@ class KeyPressSimulator:
                 self.emulator_window.minimize()
                 self.emulator_window.restore()
             print("Command registered: ", command)
-            pydirectinput.press(command, interval=0.2)
+            pydirectinput.press(command)
 
     def process_sound_requests(self):
         print("Entering Key_press_simulator.process_sound_requests : ")
